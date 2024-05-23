@@ -16,7 +16,7 @@
 ![pablovacasgarcia](https://github-readme-stats.vercel.app/api/top-langs?username=pablovacasgarcia&show_icons=true&locale=en&layout=pie&theme=transparent)
 
 
-```java
+```python
 if (summary) {
                 statsContent += '<p><img src="http://github-profile-summary-cards.vercel.app/api/cards/profile-details?username='+this.extractText(htmlContent)+'&show_icons=true&locale=en&theme=transparent" alt="'+this.extractText(htmlContent)+'" /></p>';
             }
