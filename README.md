@@ -17,8 +17,23 @@
 
 
 ```
-if (summary) {                 statsContent += '<p><img src="http://github-profile-summary-cards.vercel.app/api/cards/profile-details?username='+this.extractText(htmlContent)+'&show_icons=true&locale=en&theme=transparent" alt="'+this.extractText(htmlContent)+'" /></p>';             }             if (stats) {                 statsContent += '<p><img src="https://github-readme-stats.vercel.app/api?username='+this.extractText(htmlContent)+'&show_icons=true&locale=en&rank_icon=github&theme=transparent" alt="'+this.extractText(htmlContent)+'" /></p>';             }             if (streak) {                 statsContent += '<p><img src="https://github-readme-streak-stats.herokuapp.com/?user='+this.extractText(htmlContent)+'&theme=transparent" alt="'+this.extractText(htmlContent)+'" /></p>';             }             if (languages) {                 statsContent += '<p><img src="https://github-readme-stats.vercel.app/api/top-langs?username='+this.extractText(htmlContent)+'&show_icons=true&locale=en&layout=pie&theme=transparent" alt="'+this.extractText(htmlContent)+'" /></p>';             }              return statsContent;
+if (summary) {
+                statsContent += '<p><img src="http://github-profile-summary-cards.vercel.app/api/cards/profile-details?username='+this.extractText(htmlContent)+'&show_icons=true&locale=en&theme=transparent" alt="'+this.extractText(htmlContent)+'" /></p>';
+            }
+            if (stats) {
+                statsContent += '<p><img src="https://github-readme-stats.vercel.app/api?username='+this.extractText(htmlContent)+'&show_icons=true&locale=en&rank_icon=github&theme=transparent" alt="'+this.extractText(htmlContent)+'" /></p>';
+            }
+            if (streak) {
+                statsContent += '<p><img src="https://github-readme-streak-stats.herokuapp.com/?user='+this.extractText(htmlContent)+'&theme=transparent" alt="'+this.extractText(htmlContent)+'" /></p>';
+            }
+            if (languages) {
+                statsContent += '<p><img src="https://github-readme-stats.vercel.app/api/top-langs?username='+this.extractText(htmlContent)+'&show_icons=true&locale=en&layout=pie&theme=transparent" alt="'+this.extractText(htmlContent)+'" /></p>';
+            }
+
+            return statsContent;
 ```
+
+vsd fs df sdf sd fsfsdsssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
 
 ```bash
 npm run watch
