@@ -44,4 +44,4 @@ gdafgafdgdfgdfag
 npm run watch
 ```
 
-<img src="https://humanidades.com/wp-content/uploads/2017/02/perro-1-e1561678907722.jpg" style="width: 80%; height: 40%; object-fit: cover;" />
+<img src="https://humanidades.com/wp-content/uploads/2017/02/perro-1-e1561678907722.jpg" style="width: 80%; height: 40%;" />
