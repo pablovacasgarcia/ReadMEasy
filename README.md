@@ -43,3 +43,5 @@ gdafgafdgdfgdfag
 ```bash
 npm run watch
 ```
+
+<img src="https://humanidades.com/wp-content/uploads/2017/02/perro-1-e1561678907722.jpg" style="width: 60%; height: 40%; object-fit: cover;" />
