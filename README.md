@@ -45,3 +45,5 @@ npm run watch
 ```
 
 <img src="https://humanidades.com/wp-content/uploads/2017/02/perro-1-e1561678907722.jpg" style="width: 80%;" />
+
+<img src="https://firebasestorage.googleapis.com/v0/b/readmeasy.appspot.com/o/images%2FCaptura%20de%20pantalla%202023-11-26%20230722.png?alt=media&token=0ae30abd-51aa-4ea0-9fca-6f2ed842311f" style="width: 50%;" />
