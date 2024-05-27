@@ -1,8 +1,8 @@
 <template>
     <header class="header-global">
-        <base-nav class="navbar-main position-fixed" transparent type="" effect="dark" expand>
+        <base-nav class="navbar-main position-fixed bg-white shadow-sm" transparent type="" effect="dark" expand>
             <router-link slot="brand" class="navbar-brand mr-lg-5" to="/">
-                <img src="img/brand/white.png" alt="logo">
+                <img src="img/brand/blue.png" alt="logo">
             </router-link>
 
             <div class="row" slot="content-header" slot-scope="{closeMenu}">
@@ -19,7 +19,7 @@
             <div class="navbar-nav align-items-lg-center ml-lg-auto">
                 <base-dropdown class="nav-item" menu-classes="dropdown-menu-lg">
                     <a slot="title" href="" class="nav-link" data-toggle="dropdown" role="button" @click.prevent>
-                        <span class="nav-link-inner--text">ReadMEs</span>
+                        <span class="nav-link-inner--text text-dark">ReadMEs</span>
                     </a>
                     <div class="dropdown-menu-inner">
                         <RouterLink to="/workbench"
@@ -66,7 +66,7 @@
 
                 <base-dropdown class="nav-item" menu-classes="dropdown-menu-sm">
                     <a slot="title" href="#" class="nav-link" data-toggle="dropdown" role="button" @click.prevent>
-                        <i class="fa fa-user-circle fa-2x text-white"></i>
+                        <i class="fa fa-user-circle fa-2x text-dark"></i>
                     </a>
                     <div class="dropdown-menu-inner" aria-labelledby="navbar-default_dropdown_1">
                         <RouterLink to="/profile" class="dropdown-item" href="#"><i class="ni ni-single-02"></i>My profile</RouterLink>
@@ -80,9 +80,9 @@
             </div>
         </base-nav>
 
-        <base-nav class="navbar-mobile position-fixed" transparent type="" effect="dark">
+        <base-nav class="navbar-mobile position-fixed bg-white shadow-sm" transparent type="" effect="">
             <router-link slot="brand" class="navbar-brand mr-lg-5" to="/">
-                <img src="img/brand/white.png" alt="logo">
+                <img src="img/brand/blue.png" alt="logo">
             </router-link>
 
             <div class="row" slot="content-header" slot-scope="{closeMenu}">
@@ -148,23 +148,14 @@ import { RouterLink } from "vue-router";
         CloseButton,
         BaseDropdown
     },
-    mounted() {
-        window.addEventListener('scroll', this.handleScroll);
-    },
-    beforeDestroy() {
-        window.removeEventListener('scroll', this.handleScroll);
-    },
-    methods: {
-        handleScroll() {
-            let opacity = Math.min(window.scrollY / window.innerHeight * 0.7, 0.7);;
-            document.querySelector('.navbar-main').style.backgroundColor = `rgba(0, 0, 0, ${opacity})`;
-            document.querySelector('.navbar-mobile').style.backgroundColor = `rgba(0, 0, 0, ${opacity})`;
-        }
-    }
-    };
+}
 </script>
 
 <style>
+    nav {
+        opacity: 0.95!important;
+    }
+
     .search-item {
         width: 7rem;
         margin-top: auto;
@@ -197,7 +188,6 @@ import { RouterLink } from "vue-router";
         height: 6vh;
         font-size: 2.5vh;
     }
-
 
     @media screen and (max-width: 991.5px) {
 
