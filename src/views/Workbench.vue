@@ -35,9 +35,9 @@
                             </div>
 
                             <!-- Editing Section -->
-                            <div id="section-input" v-if="editing==section">
-                                <p v-if="section.title == 'Social Links'" class="m-2 socialLinks-label">Enter your username, or leave it empty so as not to use it</p>
-                                
+                            <p v-if="section.title == 'Social Links' && editing==section" class="m-2 px-4 text-justify socialLinks-label">Enter your username, or leave it empty so as not to use it</p>
+
+                            <div id="section-input" v-if="editing==section">                     
                                 <div v-for="(field, index) in fields" :key="index" class="d-flex align-items-center">
                                     <base-input 
                                         v-if="section.title != 'Code' && section.title != 'Text' && section.title != 'Image'" 
@@ -106,7 +106,7 @@
                     <!-- Buttons -->
                     <div class="buttons">
                         <base-button type="warning" @click="loadSectionsFromLocalStorage()"><i class="fa fa-undo" @click="loadSectionsFromLocalStorage()"></i></base-button>                        
-                        <base-button type="info" @click="saveSectionsToLocalStorage()"><i class="fa fa-floppy-o"></i></base-button>
+                        <base-button type="info" @click="showTitleModal = true"><i class="fa fa-floppy-o"></i></base-button>
                         <base-button type="success" @click="downloadReadme"><i class="fa fa-download"></i></base-button>
                     </div>
                 </header>
@@ -117,8 +117,8 @@
                 <!-- Mobile Buttons -->
                 <div class="buttons-mobile d-none justify-content-start mt-3">
                         <base-button type="warning" @click="loadSectionsFromLocalStorage()"><i class="fa fa-undo"></i></base-button>                        
-                        <base-button type="info" @click="saveSectionsToLocalStorage()"><i class="fa fa-floppy-o"></i></base-button>
-                        <base-button type="success"><i class="fa fa-download"></i></base-button>
+                        <base-button type="info" @click="showTitleModal = true"><i class="fa fa-floppy-o"></i></base-button>
+                        <base-button type="success" @click="downloadReadme()"><i class="fa fa-download"></i></base-button>
                     </div>
             </div>
 
@@ -162,7 +162,7 @@
                             </div>
 
                             <!-- Editing Section -->
-                            <p v-if="section.title == 'Social Links' && editing == section" class="m-2 socialLinks-label">Enter your username, or leave it empty so as not to use it</p>
+                            <p v-if="section.title == 'Social Links' && editing == section" class="m-2 px-4 text-justify socialLinks-label">Enter your username, or leave it empty so as not to use it</p>
 
                             <div id="section-input" v-if="editing==section">
                                 <div v-for="(field, index) in fields" :key="index" class="d-flex align-items-center">
@@ -175,11 +175,11 @@
                                     </base-input>
 
                                     <div v-else-if="section.title === 'Image'" class="image-input-container m-2">
-                                        <input type="file" @change="onImageChange" class="image-input" />
+                                        <input type="file" @change="onImageChange" class="image-input-mobile" />
                                         <div class="image-placeholder" v-if="!imagePreview">
                                             <i class="fa fa-upload"></i>
                                         </div>
-                                        <img v-show="imagePreview" :src="imageSrc" alt="Uploaded Image" class="image-preview" @error="()=>{ imagePreview = false }" @load="()=>{ imagePreview = true }"/>
+                                        <img v-show="imagePreview" :src="imageSrc" alt="Uploaded Image" class="image-preview-mobile" @error="()=>{ imagePreview = false }" @load="()=>{ imagePreview = true }"/>
                                     </div>  
 
                                     <textarea rows="4" v-else alternative class="form-control field-input m-2" v-model="field.textContent"></textarea>
@@ -221,20 +221,36 @@
                 </draggable>
             </div>
         </div>
+        
+        <modal :show.sync="showTitleModal">
+            <template slot="header">
+                <h5 class="modal-title" id="exampleModalLabel">Save ReadME</h5>
+            </template>
+            <div>
+                <base-input class="field-input m-2" v-model="readmeTitle" placeholder="ReadME Title"></base-input>
+            </div>
+            <template slot="footer">
+                <base-button type="secondary" @click="showTitleModal = false">Close</base-button>
+                <base-button type="primary" @click="saveReadme">Save changes</base-button>
+            </template>
+        </modal>
     </section>
 </template>
 
 <script>
 import { db } from '../../firebase'; // Ruta al archivo de configuración de Firebase
-import { collection, onSnapshot } from 'firebase/firestore';
+import { collection, onSnapshot, addDoc } from 'firebase/firestore';
 import draggable from 'vuedraggable';
 import TurndownService from 'turndown';
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import Modal from "@/components/Modal.vue";
 
 export default {
     name: "workbench",
     components: {
-        draggable
+        draggable,
+        Modal
     },
 
     data() {
@@ -247,9 +263,12 @@ export default {
             editing: false,
             fields: [],
             linkUrl: '',
+            user: null,
             githubStats: { summary: true, stats: true, streak: true, languages: true, trophy: true },
             imageWidth: 50,
             imagePreview: false,
+            showTitleModal: false,
+            readmeTitle: '',
             skillIcons: { ableton: false, activitypub: false, actix: false, adonis: false, ae: false, aiscript: false,
                 alpinejs: false, anaconda: false, androidstudio: false, angular: false, ansible: false,
                 apollo: false, apple: false, appwrite: false, arch: false, arduino: false, astro: false,
@@ -286,9 +305,14 @@ export default {
                 windows: false, wordpress: false, workers: false, xd: false, yarn: false, yew: false, zig: false
             },
             badges: { license:false, size:false, release:false, tag:false, commits:false, lastCommit:false, downloads:false, forks:false, stars:false, watchers:false, contributors:false, issues:false, pullRequests:false},
-            socialLinks: { instagram:false, twitter:false, linkedin:false, facebook:false, email:false, website:false, discord:false, telegram:false, whatsapp:false, youtube:false, twitch:false, spotify:false, wechat:false } 
-
         };
+    },
+
+    mounted() {
+        const auth = getAuth();
+        onAuthStateChanged(auth, user => {
+            this.user = user;
+        });
     },
 
     created() {
@@ -560,7 +584,11 @@ export default {
                     // Update the paragraph attributes
                     paragraph.setAttribute('width', this.imageWidth);
                     // Get the file from the input element
-                    const file = document.querySelector('.image-input').files[0];
+                    let file = document.querySelector('.image-input').files[0];
+                    
+                    if (!file) {
+                        file = document.querySelector('.image-input-mobile').files[0];
+                    }
 
                     if (file) {
                         // Create a storage reference
@@ -794,15 +822,31 @@ export default {
 
             return socialLinksContent;
         },
-            
-        // Save the sections to localStorage
-        saveSectionsToLocalStorage() {
+
+        // Save ReadME to Firestore or LocalStorage
+        async saveReadme() {
+            if (this.user) {
+                // Save the readme to Firestore
+                await addDoc(collection(db, 'readme'), {
+                    title: this.readmeTitle,
+                    user: this.user.uid,
+                    readme: JSON.stringify(this.mySections)
+                });
+            } 
+
+            // Save the readme to localStorage
             localStorage.setItem('mySections', JSON.stringify(this.mySections));
+            localStorage.setItem('readmeTitle', this.readmeTitle);
+
+            this.showTitleModal = false;
         },
 
         // Load the sections from localStorage
         loadSectionsFromLocalStorage() {
-            this.mySections = JSON.parse(localStorage.getItem('mySections'));
+            if (localStorage.getItem('mySections')) {
+                this.mySections = JSON.parse(localStorage.getItem('mySections'));
+                this.readmeTitle = localStorage.getItem('readmeTitle');
+            }
         },
 
         // Remove a field by index
@@ -823,6 +867,7 @@ export default {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     document.querySelector('.image-preview').src = e.target.result;
+                    document.querySelector('.image-preview-mobile').src = e.target.result;
                 };
                 reader.readAsDataURL(file);
             }
@@ -956,7 +1001,7 @@ export default {
     border-color: var(--info);
 }
 
-.image-input {
+.image-input, .image-input-mobile {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -975,7 +1020,7 @@ export default {
     color: var(--info) !important;
 }
 
-.image-preview {
+.image-preview, .image-preview-mobile {
     width: 10rem;
     height: 10rem;
     object-fit: cover;

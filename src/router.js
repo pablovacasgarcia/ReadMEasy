@@ -61,13 +61,14 @@ export default new Router({
       }
     },
     {
-      path: "/profile",
+      path: '/profile',
       name: "profile",
       components: {
         header: AppHeader,
         default: Profile,
         footer: AppFooter
-      }
+      },
+      props: (route) => ({ userId: route.params.userId })
     }
   ],
   scrollBehavior: to => {
