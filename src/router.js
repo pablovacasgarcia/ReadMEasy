@@ -8,6 +8,7 @@ import Login from "./views/Login.vue";
 import Register from "./views/Register.vue";
 import Profile from "./views/Profile.vue"; 
 import Workbench from "./views/Workbench.vue";
+import Explore from "./views/Explore.vue"; 
 
 Vue.use(Router);
 
@@ -25,7 +26,7 @@ export default new Router({
       }
     },
     {
-      path: "/workbench",
+      path: "/workbench/:id",
       name: "workbench",
       components: {
         header: AppHeader,
@@ -61,14 +62,22 @@ export default new Router({
       }
     },
     {
-      path: '/profile',
+      path: '/profile/:id',
       name: "profile",
       components: {
         header: AppHeader,
         default: Profile,
         footer: AppFooter
-      },
-      props: (route) => ({ userId: route.params.userId })
+      }
+    },
+    {
+      path: '/explore',
+      name: 'explore',
+      components: {
+        header: AppHeader,
+        default: Explore,
+        footer: AppFooter
+      }
     }
   ],
   scrollBehavior: to => {

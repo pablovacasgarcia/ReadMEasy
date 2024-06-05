@@ -105,7 +105,7 @@
 
                     <!-- Buttons -->
                     <div class="buttons">
-                        <base-button type="warning" @click="loadSectionsFromLocalStorage()"><i class="fa fa-undo" @click="loadSectionsFromLocalStorage()"></i></base-button>                        
+                        <base-button type="warning" @click="loadReadme()"><i class="fa fa-undo"></i></base-button>                        
                         <base-button type="info" @click="showTitleModal = true"><i class="fa fa-floppy-o"></i></base-button>
                         <base-button type="success" @click="downloadReadme"><i class="fa fa-download"></i></base-button>
                     </div>
@@ -116,7 +116,7 @@
 
                 <!-- Mobile Buttons -->
                 <div class="buttons-mobile d-none justify-content-start mt-3">
-                        <base-button type="warning" @click="loadSectionsFromLocalStorage()"><i class="fa fa-undo"></i></base-button>                        
+                        <base-button type="warning" @click="loadReadme()"><i class="fa fa-undo"></i></base-button>                        
                         <base-button type="info" @click="showTitleModal = true"><i class="fa fa-floppy-o"></i></base-button>
                         <base-button type="success" @click="downloadReadme()"><i class="fa fa-download"></i></base-button>
                     </div>
@@ -238,8 +238,8 @@
 </template>
 
 <script>
-import { db } from '../../firebase'; // Ruta al archivo de configuración de Firebase
-import { collection, onSnapshot, addDoc } from 'firebase/firestore';
+import { db } from '../../firebase';
+import { collection, onSnapshot, addDoc, doc, setDoc, getDoc } from 'firebase/firestore';
 import draggable from 'vuedraggable';
 import TurndownService from 'turndown';
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -269,6 +269,7 @@ export default {
             imagePreview: false,
             showTitleModal: false,
             readmeTitle: '',
+            readmeUser: '',
             skillIcons: { ableton: false, activitypub: false, actix: false, adonis: false, ae: false, aiscript: false,
                 alpinejs: false, anaconda: false, androidstudio: false, angular: false, ansible: false,
                 apollo: false, apple: false, appwrite: false, arch: false, arduino: false, astro: false,
@@ -305,6 +306,7 @@ export default {
                 windows: false, wordpress: false, workers: false, xd: false, yarn: false, yew: false, zig: false
             },
             badges: { license:false, size:false, release:false, tag:false, commits:false, lastCommit:false, downloads:false, forks:false, stars:false, watchers:false, contributors:false, issues:false, pullRequests:false},
+            readmeId: '',
         };
     },
 
@@ -322,8 +324,8 @@ export default {
             this.sections = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         });
 
-        // Load sections from localStorage
-        this.loadSectionsFromLocalStorage();
+        // Load Readme if exists
+        this.loadReadme();
     },
 
     methods: {
@@ -358,34 +360,41 @@ export default {
                     document.getElementById('preview-display').innerHTML = '<code class="w-100 h-100 text-break">' + this.escapeHtml(markdown) + '</code>';
 
                 } else {
-
-                    // Display the content as HTML
-                    for (let section of this.mySections) {
-                        if (section.title == 'GitHub Stats') {
-                            // Display the github stats
-                            document.getElementById('preview-display').innerHTML += this.extractStats(section.content);
-                        } else if (section.title === 'Code') {
-                            // Display the code or text
-                            document.getElementById('preview-display').innerHTML += '<pre>' + section.content + '</pre>';
-                        } else if (section.title === 'Image') {
-                            // Display the image
-                            document.getElementById('preview-display').innerHTML += '<p>' + this.extractImg(section.content) + '</p>';
-                        } else if (section.title === 'Skill Icons'){
-                            // Display the skill icons
-                            document.getElementById('preview-display').innerHTML += '<p><img src="https://skillicons.dev/icons?i='+ this.extractText(section.content) +'" /></p>';
-                        } else if (section.title === 'Repository Badges'){
-                            // Display the repository badges
-                            document.getElementById('preview-display').innerHTML += '<p>' + this.extractBadges(section.content) + '</p>';
-                        } else if (section.title === 'Social Links') {
-                            // Display the social links
-                            document.getElementById('preview-display').innerHTML += '<p>' + this.extractSocialLinks(section.content) + '</p>';
-                        } else {
-                            // Display the content
-                            document.getElementById('preview-display').innerHTML += section.content;
-                        }
-                    }
+                    document.getElementById('preview-display').innerHTML = this.getHtml();
                 }
             }            
+        },
+
+        getHtml() {
+            let html = "";
+
+            // Display the content as HTML
+            for (let section of this.mySections) {
+                if (section.title == 'GitHub Stats') {
+                    // Display the github stats
+                    html += this.extractStats(section.content);
+                } else if (section.title === 'Code') {
+                    // Display the code or text
+                    html += '<pre>' + section.content + '</pre>';
+                } else if (section.title === 'Image') {
+                    // Display the image
+                    html += '<p>' + this.extractImg(section.content) + '</p>';
+                } else if (section.title === 'Skill Icons'){
+                    // Display the skill icons
+                    html += '<p><img src="https://skillicons.dev/icons?i='+ this.extractText(section.content) +'" /></p>';
+                } else if (section.title === 'Repository Badges'){
+                    // Display the repository badges
+                    html += '<p>' + this.extractBadges(section.content) + '</p>';
+                } else if (section.title === 'Social Links') {
+                    // Display the social links
+                    html += '<p>' + this.extractSocialLinks(section.content) + '</p>';
+                } else {
+                    // Display the content
+                    html += section.content;
+                }
+            }
+
+            return html;
         },
 
         getMarkdown() {
@@ -826,26 +835,68 @@ export default {
         // Save ReadME to Firestore or LocalStorage
         async saveReadme() {
             if (this.user) {
-                // Save the readme to Firestore
-                await addDoc(collection(db, 'readme'), {
-                    title: this.readmeTitle,
-                    user: this.user.uid,
-                    readme: JSON.stringify(this.mySections)
-                });
-            } 
+                if (this.readmeId == 'NewReadMe' || this.readmeUser !== this.user.uid) {
+                    // Add a new document with a generated ID
+                    const docRef = await addDoc(collection(db, 'readme'), {
+                        title: this.readmeTitle,
+                        user: this.user.uid,
+                        sections: JSON.stringify(this.mySections),
+                        content: this.getHtml(),
+                    });
 
-            // Save the readme to localStorage
-            localStorage.setItem('mySections', JSON.stringify(this.mySections));
-            localStorage.setItem('readmeTitle', this.readmeTitle);
+                    this.readmeId = docRef.id;
+                    this.$route.params.id = docRef.id;
+                } else {
+                    // Update the document
+                    const readmeRef = doc(db, "readme", this.readmeId);
+                    await setDoc(readmeRef, {
+                        title: this.readmeTitle,
+                        user: this.user.uid,
+                        sections: JSON.stringify(this.mySections),
+                        content: this.getHtml(),
+                    });
+                }
+
+                // Clear the localStorage data
+                localStorage.removeItem('mySections');
+
+                console.log("Document written with ID: ", this.readmeId);
+            } else {
+                // Save the readme to localStorage
+                localStorage.setItem('mySections', JSON.stringify(this.mySections));
+                localStorage.setItem('readmeTitle', this.readmeTitle);
+            }
 
             this.showTitleModal = false;
         },
 
-        // Load the sections from localStorage
-        loadSectionsFromLocalStorage() {
-            if (localStorage.getItem('mySections')) {
-                this.mySections = JSON.parse(localStorage.getItem('mySections'));
-                this.readmeTitle = localStorage.getItem('readmeTitle');
+        // Load the readme from Firestore or LocalStorage
+        async loadReadme() {
+            if (this.$route.params.id){
+                this.readmeId = this.$route.params.id;
+            } else {
+                this.readmeId = 'NewReadMe';
+            }
+            
+
+            if (this.readmeId == 'NewReadMe') {
+                // Load the readme from LocalStorage
+                if (localStorage.getItem('mySections')) {
+                    this.mySections = JSON.parse(localStorage.getItem('mySections'));
+                    this.readmeTitle = localStorage.getItem('readmeTitle');
+                }
+            } else {
+                // Load the readme from Firestore
+                const readmeRef = doc(db, "readme", this.$route.params.id);
+                const readmeSnap = await getDoc(readmeRef);
+                if (readmeSnap.exists()) {
+                    this.mySections = JSON.parse(readmeSnap.data().sections);
+                    this.readmeTitle = readmeSnap.data().title;
+                    this.readmeUser = readmeSnap.data().user;
+                } else {
+                    console.log("No such readme document!");
+                }
+                
             }
         },
 
