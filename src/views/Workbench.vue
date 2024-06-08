@@ -226,8 +226,10 @@
             <template slot="header">
                 <h5 class="modal-title" id="exampleModalLabel">Save ReadME</h5>
             </template>
-            <div>
-                <base-input class="field-input m-2" v-model="readmeTitle" placeholder="ReadME Title"></base-input>
+            <div class="p-2">
+                <base-input class="field-input" v-model="readmeTitle" placeholder="ReadMe Title"></base-input>
+                <textarea class="form-control" v-model="readmeDescription" placeholder="ReadMe Description"></textarea>
+                <base-checkbox class="mt-3" v-model="readmePublic">Allow Usage</base-checkbox>
             </div>
             <template slot="footer">
                 <base-button type="secondary" @click="showTitleModal = false">Close</base-button>
@@ -270,6 +272,8 @@ export default {
             showTitleModal: false,
             readmeTitle: '',
             readmeUser: '',
+            readmeDescription: '',
+            readmePublic: true,
             skillIcons: { ableton: false, activitypub: false, actix: false, adonis: false, ae: false, aiscript: false,
                 alpinejs: false, anaconda: false, androidstudio: false, angular: false, ansible: false,
                 apollo: false, apple: false, appwrite: false, arch: false, arduino: false, astro: false,
@@ -839,6 +843,8 @@ export default {
                     // Add a new document with a generated ID
                     const docRef = await addDoc(collection(db, 'readme'), {
                         title: this.readmeTitle,
+                        description: this.readmeDescription,
+                        public: this.readmePublic,
                         user: this.user.uid,
                         sections: JSON.stringify(this.mySections),
                         content: this.getHtml(),
@@ -892,6 +898,8 @@ export default {
                 if (readmeSnap.exists()) {
                     this.mySections = JSON.parse(readmeSnap.data().sections);
                     this.readmeTitle = readmeSnap.data().title;
+                    this.readmeDescription = readmeSnap.data().description;
+                    this.readmePublic = readmeSnap.data().public ? readmeSnap.data().public : true;
                     this.readmeUser = readmeSnap.data().user;
                 } else {
                     console.log("No such readme document!");

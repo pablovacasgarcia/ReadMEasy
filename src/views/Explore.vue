@@ -14,7 +14,7 @@
       </div>
       <div class="container pt-lg-md d-flex flex-wrap justify-content-center" v-if="activeSection=='readmes' || activeSection=='templates'">
         <div v-for="readme in search" :key="readme.id" class="readme-card d-flex flex-column justify-content-center" v-if="readme.user !=  currentUser.uid">
-          <div class="preview w-100 mb-3 p-4 rounded" @click="openReadme(readme)">
+          <div class="preview w-100 mb-3 p-4 rounded" @click="openReadmeModal(readme)">
             <div class="content" v-html="readme.preview"></div>
           </div>
           
@@ -54,6 +54,51 @@
             </div>
         </div>
       </div>
+      <modal :show.sync="readmeModal" class="readme-modal" modal-classes="modal-dialog-centered modal-lg">
+            <h6 slot="header" class="modal-title" id="modal-title-default">{{ selectedReadme.title }}</h6>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-7">
+                        <div class="preview w-100 mb-3 p-4 rounded">
+                            <div class="content" v-html="selectedReadme.preview"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 d-flex flex-column align-items-start">
+                        <div v-if="currentUser && selectedReadme.user != currentUser.uid" class="w-100 d-flex flex-column">
+                            <base-button v-if="selectedReadme.public" class="w-100" type="primary" @click="openReadme(selectedReadme)" icon="fa fa-pencil-square-o">Use this template</base-button>
+
+                            <div class="d-flex align-items-center justify-content-between mt-4">
+                                <router-link :to="{name:'profile', params:{id:selectedReadme.user}}" class="user-info d-flex align-items-center">
+                                    <img :src="selectedReadme.photoURL" class="rounded-circle" width="50" height="50" />
+                                    <div class="d-flex flex-column ml-4">
+                                        <span class="text-default">{{ selectedReadme.fullName }}</span>
+                                        <small class="text-primary">@{{ selectedReadme.userName }}</small>
+                                    </div>
+                                </router-link>
+
+                                <div v-if="selectedReadme.user != currentUser.uid">
+                                    <i v-if="!selectedReadme.followers || !selectedReadme.followers.includes(currentUser.uid)" class="readme-follow fa fa-user-plus bg-primary text-white p-2 rounded" @click="toggleFollow({uid: selectedReadme.user, followers: selectedReadme.followers})"></i>
+                                    <i v-else class="readme-follow fa fa-user-times text-primary border border-primary p-2 rounded" @click="toggleFollow({uid: selectedReadme.user, followers: selectedReadme.followers})"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div v-else class="w-100">
+                            <div class="d-flex">
+                                <base-button class="w-50" type="primary" @click="openReadme(selectedReadme)" icon="fa fa-pencil">Edit</base-button>
+                                <base-button class="w-50" type="danger" @click="openReadme(selectedReadme)" icon="fa fa-trash">Delete</base-button>
+                            </div>                            
+                        </div>
+
+                        <p v-if="selectedReadme.description"  class="readme-description w-100 mt-3">{{ selectedReadme.description }}</p>
+                    </div>
+                </div>
+            </div>
+            <template slot="footer">
+                <span class="like ml-4" v-if="selectedReadme.likes" @click="toggleLike(selectedReadme)"><i :class="['fa text-primary', selectedReadme.likes && selectedReadme.likes.includes(currentUser ? currentUser.uid : '') ? 'fa-heart' : 'fa-heart-o']"></i> {{ selectedReadme.likes.length }} Likes</span>
+                <base-button type="link" class="ml-auto" @click="readmeModal = false">Close</base-button>
+            </template>
+        </modal>
     </section>
   </template>
   
@@ -62,16 +107,23 @@
 <script> 
 import { db } from '../../firebase';
 import { collection, doc, updateDoc, arrayUnion, arrayRemove, onSnapshot, getDoc, query, where, getDocs } from 'firebase/firestore';
+import Modal from "@/components/Modal.vue";
 import { getAuth } from 'firebase/auth';
 
 export default {
+  name: 'Explore',
+  components: {
+      Modal
+  },
   data() {
     return {
       readmes: [],
       currentUser: null,
       searchQuery: '',
       activeSection: 'readmes',
-      users: []
+      users: [],
+      readmeModal: false,
+      selectedReadme: {}
     };
   },
   computed: {
@@ -104,7 +156,8 @@ export default {
         }
 
         return '50%';
-}
+    },
+    
   },
   async mounted() {
     const auth = getAuth();
@@ -127,10 +180,15 @@ export default {
           id: docSnap.id,
           title: data.title,
           preview: data.content,
-          userName: userDoc ? userDoc.data().username : 'ReadMEassy Templates',
+          userName: userDoc ? userDoc.data().username : 'ReadMEasy Templates',
+          photoURL: userDoc ? userDoc.data().photoURL : '',
+          fullName: userDoc ? userDoc.data().fullName : 'ReadMEasy Templates',
+          followers: userDoc ? userDoc.data().followers : [],
+          description: data.description,
           user: data.user,
           likes: data.likes || [],
-          type: data.type ? 'template' : 'readme'
+          public: data.public ? data.public : true,
+          type: data.type ? data.type : 'readme'
         };
       }));
       this.readmes = readmesData;
@@ -164,6 +222,8 @@ export default {
     setActiveSection(section) {
       this.activeSection = section;
     },
+
+    // Like or unlike a readme
     async toggleLike(readme) {
       const readmeRef = doc(db, 'readme', readme.id);
       if (readme.likes.includes(this.currentUser.uid)) {
@@ -175,28 +235,40 @@ export default {
           likes: arrayUnion(this.currentUser.uid)
         });
       }
+
+      if (this.readmeModal) {
+        this.selectedReadme.likes.includes(this.currentUser.uid) ? this.selectedReadme.likes.splice(this.selectedReadme.likes.indexOf(this.currentUser.uid), 1) : this.selectedReadme.likes.push(this.currentUser.uid);
+      }
     },
 
     // Follow or unfollow a user
     async toggleFollow(user) {
       const userRef = doc(db, 'user', user.uid);
-      if (user.followers.includes(this.currentUser.uid)) {
-        await updateDoc(userRef, {
-          followers: arrayRemove(this.currentUser.uid)
-        });
-        user.followers = user.followers.filter(follower => follower !== this.currentUser.uid);
-      } else {
-        await updateDoc(userRef, {
-          followers: arrayUnion(this.currentUser.uid)
-        });
-        user.followers.push(this.currentUser.uid);
-      }
+        if (user.followers.includes(this.currentUser.uid)) {
+          await updateDoc(userRef, {
+            followers: arrayRemove(this.currentUser.uid)
+          });
+        } else {
+          await updateDoc(userRef, {
+            followers: arrayUnion(this.currentUser.uid)
+          });
+        }
+
+        if (this.readmeModal) {
+          this.selectedReadme.followers.includes(this.currentUser.uid) ? this.selectedReadme.followers.splice(this.selectedReadme.followers.indexOf(this.currentUser.uid), 1) : this.selectedReadme.followers.push(this.currentUser.uid);
+        }
     },
 
     // Open readme
     openReadme(readme){
        this.$router.push({name: 'workbench', params: {id: readme.id}});
-    }
+    },
+
+    // Open readme modal
+    openReadmeModal(readme){
+      this.selectedReadme = readme;
+      this.readmeModal = true;
+    },
   }
 };
 
@@ -325,6 +397,31 @@ export default {
 .followers, .readmes {
     font-size: 1.2rem;
 }
+
+.modal-dialog .preview {
+  height: 50vh;
+  overflow-y: auto;
+  scrollbar-color: var(--info) transparent;
+  scrollbar-width: thin;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.modal-dialog .content {
+  transform: scale(0.70); 
+  width: 143%;
+  transform-origin: 0 0;
+}
+
+.readme-description{
+        white-space: pre-line;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .readme-follow:hover {
+        cursor: pointer;
+    }
 
 @media screen and (max-width: 991.5px) {
   .header {

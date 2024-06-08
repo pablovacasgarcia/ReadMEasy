@@ -31,7 +31,7 @@
                                 <p class="description d-none d-md-inline-block mb-0">Create and design a new ReadME project</p>
                             </div>
                         </router-link>
-                        <a v-if="user" href="https://demos.creative-tim.com/vue-argon-design-system/documentation/" class="media d-flex align-items-center">
+                        <router-link :to="{name: 'profile', params:{id: 'MyProfile'}}" v-if="user" class="media d-flex align-items-center">
                             <div class="icon icon-shape bg-gradient-primary rounded-circle text-white">
                                 <i class="ni ni-spaceship"></i>
                             </div>
@@ -39,7 +39,7 @@
                                 <h6 class="heading text-primary mb-md-1">My ReadMEs</h6>
                                 <p class="description d-none d-md-inline-block mb-0">View and edit your ReadMEs</p>
                             </div>
-                        </a>
+                        </router-link>
                         <RouterLink to="/explore" v-if="user" class="media d-flex align-items-center">
                             <div class="icon icon-shape bg-gradient-warning rounded-circle text-white">
                                 <i class="ni ni-planet"></i>
@@ -59,15 +59,15 @@
                 <template>
                     <base-dropdown class="nav-item" menu-classes="dropdown-menu-sm">
                         <a slot="title" href="#" class="nav-link" data-toggle="dropdown" role="button" @click.prevent>
-                            <img v-if="user && user.photoURL" :src="user.photoURL" class="rounded-circle" width="30" height="30" />
+                            <img v-if="user && user.photoURL" :src="user.photoURL" class="profile-image rounded-circle" width="30" height="30" />
                             <i v-else class="fa fa-user-circle fa-2x text-dark"></i>
                         </a>
                         <div v-if="user" class="dropdown-menu-inner" aria-labelledby="navbar-default_dropdown_1">
                             <router-link :to="{name:'profile', params:{id:'MyProfile'}}" class="dropdown-item"><i class="ni ni-single-02"></i>My profile</router-link>
-                            <a class="dropdown-item" href="#"><i class="ni ni-favourite-28"></i>Liked</a>
-                            <a class="dropdown-item" href="#"><i class="fa fa-users"></i>Following</a>
+                            <router-link :to="{name: 'profile', params:{id: 'MyProfile', section: 'liked'}}" class="dropdown-item"><i class="ni ni-favourite-28"></i>Liked</router-link>
+                            <router-link :to="{name: 'profile', params:{id: 'MyProfile', section: 'following'}}" class="dropdown-item"><i class="fa fa-users"></i>Following</router-link>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#" @click="signOut"><i class="fa fa-sign-out"></i>Sign out</a>
+                            <a class="dropdown-item" href="" @click="signOut"><i class="fa fa-sign-out"></i>Sign out</a>
                         </div>
                         <div v-else  class="dropdown-menu-inner" aria-labelledby="navbar-default_dropdown_1">
                             <router-link to="/login"  class="dropdown-item"><i class="fa fa-sign-in"></i>Login</router-link>
@@ -87,7 +87,7 @@
             <div class="row" slot="content-header" slot-scope="{closeMenu}">
                 <div class="pl-5 col-10 collapse-brand d-flex w-100 justify-content-center mt-5">
                     <router-link :to="{name:'profile', params:{id:'MyProfile'}}">
-                        <img v-if="user && user.photoURL" :src="user.photoURL" class="w-100 h-auto rounded-circle ml-2"/>
+                        <img v-if="user && user.photoURL" :src="user.photoURL" class="profile-image rounded-circle ml-3"/>
                         <i v-else class="fa fa-user-circle fa-5x text-dark w-100 h-auto ml-3"></i>
                     </router-link>
                 </div>
@@ -103,13 +103,13 @@
                 <template v-if="user">
                     
                     <li class="nav-item">
-                        <a href="#" class="nav-link nav-link-icon"><i class="ni ni-spaceship"></i><span class="nav-link-inner--text d-lg-none">My ReadMEs</span></a>
+                        <router-link :to="{name: 'profile', params:{id: 'MyProfile'}}" class="nav-link nav-link-icon"><i class="ni ni-spaceship"></i><span class="nav-link-inner--text d-lg-none">My ReadMEs</span></router-link>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link nav-link-icon"><i class="ni ni-favourite-28"></i><span class="nav-link-inner--text d-lg-none">Liked</span></a>
+                        <router-link :to="{name: 'profile', params:{id: 'MyProfile', section: 'liked'}}" class="nav-link nav-link-icon"><i class="ni ni-favourite-28"></i><span class="nav-link-inner--text d-lg-none">Liked</span></router-link>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link nav-link-icon"><i class="fa fa-users"></i><span class="nav-link-inner--text d-lg-none">Following</span></a>
+                        <router-link :to="{name: 'profile', params:{id: 'MyProfile', section: 'following'}}" class="nav-link nav-link-icon"><i class="fa fa-users"></i><span class="nav-link-inner--text d-lg-none">Following</span></router-link>
                     </li>
                     <li class="nav-item">
                         <router-link to="/explore" class="nav-link nav-link-icon"><i class="ni ni-planet"></i><span class="nav-link-inner--text d-lg-none">Explore</span></router-link>
@@ -140,7 +140,7 @@
 <script>
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import { db } from '../../firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, onSnapshot } from 'firebase/firestore';
 import BaseNav from "@/components/BaseNav";
 import BaseDropdown from "@/components/BaseDropdown";
 import CloseButton from "@/components/CloseButton";
@@ -160,21 +160,22 @@ export default {
     },
     async mounted() {
         const auth = getAuth();
-        onAuthStateChanged(auth, user => {
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
                     const userRef = doc(db, "user", user.uid);
-                    const userSnap = await getDoc(userRef);
-                    if (userSnap.exists()) {
-                        this.user = userSnap.data();
-                    } else {
-                        console.log("No such user document!");
-                    }
+                    onSnapshot(userRef, (userSnap) => {
+                        if (userSnap.exists()) {
+                            this.user = userSnap.data();
+                        } else {
+                            console.log("No such user document!");
+                        }
+                    }, (error) => {
+                        console.error("Error listening to user document:", error);
+                    });
                 } else {
                     console.log("No user is signed in.");
                 }
-            });         
-        });
+            });      
 
         this.$router.afterEach(() => {
             const closeButton = document.getElementById('close-button');
@@ -245,6 +246,20 @@ nav {
     left: 65%!important;
 }
 
+.profile-image {
+    object-fit: cover;
+}
+
+.router-link-active {
+    background-color: white !important;
+    color: var(--dark)!important;
+}
+
+.router-link-active:hover {
+    background-color: var(--secondary) !important;
+    color: var(--dark)!important;
+}
+
 @media screen and (max-width: 991.5px) {
     .navbar-main {
         display: none!important;;
@@ -264,6 +279,11 @@ nav {
 
     .navbar-mobile .nav-bottom {
         bottom: 40;
+    }
+
+    .profile-image {
+        width: 10rem!important;
+        height: 10rem!important;
     }
 }
 </style>
