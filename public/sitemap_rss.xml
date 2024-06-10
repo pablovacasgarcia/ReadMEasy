@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>ReadMEasy - README Generator</title>
+    <link>https://readmeasy.web.app/</link>
+    <description>Descripción del Sitio</description>
+    <language>en-EN</language>
+    <lastBuildDate>Thu, 10 Jun 2024 00:00:00 GMT</lastBuildDate>
+    <pubDate>Thu, 10 Jun 2024 00:00:00 GMT</pubDate>
+    <ttl>60</ttl>
+    <image>
+      <url>https://readmeasy.web.app/img/brand/blue.png</url>
+      <title>ReadMEasy Logo</title>
+      <link>https://readmeasy.web.app/img/brand/blue.png</link>
+    </image>
+    <item>
+        <title>ReadMEasy - README Generator</title>
+        <link>https://readmeasy.web.app/</link>
+      <description>Descripción de la página de inicio.</description>
+      <pubDate>Thu, 10 Jun 2024 00:00:00 GMT</pubDate>
+    </item>
+    <item>
+        <title>ReadMEasy - README Generator</title>
+        <link>https://readmeasy.web.app/workbench/123</link>
+      <description>Descripción de Workbench 123.</description>
+      <pubDate>Thu, 10 Jun 2024 00:00:00 GMT</pubDate>
+    </item>
+    <item>
+        <title>ReadMEasy - README Generator</title>
+        <link>https://readmeasy.web.app/workbench/456</link>
+      <description>Descripción de Workbench 456.</description>
+      <pubDate>Thu, 10 Jun 2024 00:00:00 GMT</pubDate>
+    </item>
+    <item>
+        <title>ReadMEasy - Profile</title>
+        <link>https://readmeasy.web.app/profile/123</link>
+      <description>Descripción de Perfil 123.</description>
+      <pubDate>Thu, 10 Jun 2024 00:00:00 GMT</pubDate>
+    </item>
+    <item>
+        <title>ReadMEasy - Profile</title>
+        <link>https://readmeasy.web.app/profile/456</link>
+      <description>Descripción de Perfil 456.</description>
+      <pubDate>Thu, 10 Jun 2024 00:00:00 GMT</pubDate>
+    </item>
+    <item>
+        <title>ReadMEasy - Explore</title>
+        <link>https://readmeasy.web.app/explore</link>
+      <description>Descripción de la página Explorar.</description>
+      <pubDate>Thu, 10 Jun 2024 00:00:00 GMT</pubDate>
+    </item>
+    <item>
+        <title>ReadMEasy - Login</title>
+        <link>https://readmeasy.web.app/login</link>
+      <description>Descripción de la página de inicio de sesión.</description>
+      <pubDate>Thu, 10 Jun 2024 00:00:00 GMT</pubDate>
+    </item>
+    <item>
+        <title>ReadMEasy - Register</title>
+        <link>https://readmeasy.web.app/register</link>
+      <description>Descripción de la página de registro.</description>
+      <pubDate>Thu, 10 Jun 2024 00:00:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>

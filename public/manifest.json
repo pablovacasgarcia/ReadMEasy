@@ -1,0 +1,22 @@
+{
+    "name": "ReadMEasy",
+    "short_name": "ReadMEasy",
+    "description": "ReadMEasy - README Generator for GitHub Profile and Repositories",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#fff",
+    "theme_color": "#5e72e4",
+    "icons": [
+      {
+        "src": "img/favicon.ico",
+        "sizes": "192x192",
+        "type": "image/icon"
+      },
+      {
+        "src": "img/favicon.ico",
+        "sizes": "512x512",
+        "type": "image/icon"
+      }
+    ]
+  }
+  

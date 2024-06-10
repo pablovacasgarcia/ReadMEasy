@@ -28,13 +28,13 @@
       <div class="container d-flex flex-column" v-if="activeSection=='users'">
         <div class="user-card border-bottom py-4" v-for="user in search" :key="user.id" v-if="user.uid != currentUser.uid">
             <div class="d-flex align-items-center justify-content-between">
-                <router-link :to="{name:'profile', params:{id:user.uid}}" class="user-info d-flex align-items-center">
+                <div @click="openUser(user.uid)" class="user-info d-flex align-items-center">
                     <img :src="user.photoURL" class="rounded-circle" width="50" height="50" />
                     <div class="d-flex flex-column ml-4">
                         <span class="text-default">{{ user.fullName }}</span>
                         <small class="text-primary">@{{ user.username }}</small>
                     </div>
-                </router-link>
+                </div>
 
                 <div class="d-flex align-items-center">                       
                     <i class="fa fa-users followers mr-2"></i>
@@ -67,20 +67,22 @@
                         <div v-if="currentUser && selectedReadme.user != currentUser.uid" class="w-100 d-flex flex-column">
                             <base-button v-if="selectedReadme.public" class="w-100" type="primary" @click="openReadme(selectedReadme)" icon="fa fa-pencil-square-o">Use this template</base-button>
 
-                            <div class="d-flex align-items-center justify-content-between mt-4">
-                                <router-link :to="{name:'profile', params:{id:selectedReadme.user}}" class="user-info d-flex align-items-center">
+                            <div v-if="selectedReadme.type != 'template'" class="d-flex align-items-center justify-content-between mt-4">
+                                <div @click="openUser(selectedReadme.user)" class="user-info d-flex align-items-center">
                                     <img :src="selectedReadme.photoURL" class="rounded-circle" width="50" height="50" />
                                     <div class="d-flex flex-column ml-4">
                                         <span class="text-default">{{ selectedReadme.fullName }}</span>
                                         <small class="text-primary">@{{ selectedReadme.userName }}</small>
                                     </div>
-                                </router-link>
+                                </div>
 
                                 <div v-if="selectedReadme.user != currentUser.uid">
                                     <i v-if="!selectedReadme.followers || !selectedReadme.followers.includes(currentUser.uid)" class="readme-follow fa fa-user-plus bg-primary text-white p-2 rounded" @click="toggleFollow({uid: selectedReadme.user, followers: selectedReadme.followers})"></i>
                                     <i v-else class="readme-follow fa fa-user-times text-primary border border-primary p-2 rounded" @click="toggleFollow({uid: selectedReadme.user, followers: selectedReadme.followers})"></i>
                                 </div>
                             </div>
+
+                            <span v-else class="text-default">{{ selectedReadme.fullName }}</span>
                         </div>
 
                         <div v-else class="w-100">
@@ -261,7 +263,18 @@ export default {
 
     // Open readme
     openReadme(readme){
-       this.$router.push({name: 'workbench', params: {id: readme.id}});
+      document.body.classList.remove('modal-open');
+      this.$router.push({name: 'workbench', params: {id: readme.id}});
+    },
+
+    // Open user profile
+    openUser(uid){
+      document.body.classList.remove('modal-open');
+      if (uid === this.currentUser.uid) {
+        this.$router.push({name: 'profile', params: {id: 'MyProfile'}});
+      } else {
+        this.$router.push({name: 'profile', params: {id: uid}});
+      }
     },
 
     // Open readme modal
@@ -371,6 +384,15 @@ export default {
   max-width: 100%;
 }
 
+.user-card .user-info {
+  width: 12rem;
+  overflow: hidden;
+}
+
+.user-info:hover {
+  cursor: pointer;
+} 
+
 .username {
   font-size: 0.7rem;
   margin-top: -1rem;
@@ -438,4 +460,4 @@ export default {
   }
 }
 </style>
-  
+  ../firebase

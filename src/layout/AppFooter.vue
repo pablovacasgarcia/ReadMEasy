@@ -2,30 +2,15 @@
     <footer class="footer has-cards">
         <div class="container">
            <hr>
-            <div class="row align-items-center justify-content-md-between">
-                <div class="col-md-6">
+            <div class="row align-items-center justify-content-md-between">                
+                <router-link slot="brand" class="navbar-brand mr-lg-5" to="/">
+                    <img src="https://firebasestorage.googleapis.com/v0/b/readmeasy.appspot.com/o/images%2Fblue.png?alt=media&token=86cd20a2-eea2-4e6d-822b-1dc26cbc504d" alt="logo">
+                </router-link>
+                <div>
                     <div class="copyright">
                         &copy; {{year}}
-                        <a href="https://www.creative-tim.com" target="_blank" rel="noopener">Creative Tim</a> & <a href="https://www.binarcode.com" target="_blank" rel="noopener">Binar Code</a>
+                        <a href="https://github.com/pablovacasgarcia" target="_blank" class="text-primary font-weight-bold">Pablo Vacas García</a>
                     </div>
-                </div>
-                <div class="col-md-6">
-                    <ul class="nav nav-footer justify-content-end">
-                        <li class="nav-item">
-                            <a href="https://www.creative-tim.com" class="nav-link" target="_blank" rel="noopener">Creative Tim</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="https://www.creative-tim.com/presentation" class="nav-link" target="_blank" rel="noopener">About
-                                Us</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="http://blog.creative-tim.com" class="nav-link" target="_blank" rel="noopener">Blog</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="https://github.com/creativetimofficial/argon-design-system/blob/master/LICENSE.md"
-                               class="nav-link" target="_blank" rel="noopener">MIT License</a>
-                        </li>
-                    </ul>
                 </div>
             </div>
         </div>

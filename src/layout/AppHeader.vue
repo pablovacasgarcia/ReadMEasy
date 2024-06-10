@@ -2,14 +2,11 @@
     <header class="header-global">
         <base-nav class="navbar-main position-fixed bg-white shadow-sm" transparent type="" effect="dark" expand>
             <router-link slot="brand" class="navbar-brand mr-lg-5" to="/">
-                <img src="img/brand/blue.png" alt="logo">
+                <img src="https://firebasestorage.googleapis.com/v0/b/readmeasy.appspot.com/o/images%2Fblue.png?alt=media&token=86cd20a2-eea2-4e6d-822b-1dc26cbc504d" alt="logo">
             </router-link>
 
             <div class="row" slot="content-header" slot-scope="{closeMenu}">
                 <div class="col-6 collapse-brand">
-                    <a href="https://demos.creative-tim.com/vue-argon-design-system/documentation/">
-                        <img src="img/brand/blue.png">
-                    </a>
                 </div>
                 <div class="col-6 collapse-close">
                     <close-button @click="closeMenu"></close-button>
@@ -17,86 +14,95 @@
             </div>
             
             <div class="navbar-nav align-items-lg-center ml-lg-auto">
-                <base-dropdown class="nav-item" menu-classes="dropdown-menu-lg">
-                    <a slot="title" href="" class="nav-link" data-toggle="dropdown" role="button" @click.prevent>
-                        <span class="nav-link-inner--text text-dark">ReadMEs</span>
-                    </a>
-                    <div class="dropdown-menu-inner">
-                        <router-link :to="{name:'workbench', params:{id:'NewReadMe'}}" class="media d-flex align-items-center">
-                            <div class="icon icon-shape bg-gradient-info rounded-circle text-white">
-                                <i class="ni ni-ruler-pencil"></i>
-                            </div>
-                            <div class="media-body ml-3">
-                                <h5 class="heading text-info mb-md-1">New ReadME</h5>
-                                <p class="description d-none d-md-inline-block mb-0">Create and design a new ReadME project</p>
-                            </div>
-                        </router-link>
-                        <router-link :to="{name: 'profile', params:{id: 'MyProfile'}}" v-if="user" class="media d-flex align-items-center">
-                            <div class="icon icon-shape bg-gradient-primary rounded-circle text-white">
-                                <i class="ni ni-spaceship"></i>
-                            </div>
-                            <div class="media-body ml-3">
-                                <h6 class="heading text-primary mb-md-1">My ReadMEs</h6>
-                                <p class="description d-none d-md-inline-block mb-0">View and edit your ReadMEs</p>
-                            </div>
-                        </router-link>
-                        <RouterLink to="/explore" v-if="user" class="media d-flex align-items-center">
-                            <div class="icon icon-shape bg-gradient-warning rounded-circle text-white">
-                                <i class="ni ni-planet"></i>
-                            </div>
-                            <div class="media-body ml-3">
-                                <h5 class="heading text-warning mb-md-1">Explore</h5>
-                                <p class="description d-none d-md-inline-block mb-0">Explore popular readmes and templates to use</p>
-                            </div>
-                        </RouterLink>
-                    </div>
-                </base-dropdown>
-
-                <div class="nav-item search-item" v-if="user">
-                    <base-input alternative placeholder="Search" addon-right-icon="fa fa-search" inputClasses="search-input" @keyup.enter="search()" v-model="searchInput"></base-input>
-                </div>
-
-                <template>
-                    <base-dropdown class="nav-item" menu-classes="dropdown-menu-sm">
-                        <a slot="title" href="#" class="nav-link" data-toggle="dropdown" role="button" @click.prevent>
-                            <img v-if="user && user.photoURL" :src="user.photoURL" class="profile-image rounded-circle" width="30" height="30" />
-                            <i v-else class="fa fa-user-circle fa-2x text-dark"></i>
-                        </a>
-                        <div v-if="user" class="dropdown-menu-inner" aria-labelledby="navbar-default_dropdown_1">
-                            <router-link :to="{name:'profile', params:{id:'MyProfile'}}" class="dropdown-item"><i class="ni ni-single-02"></i>My profile</router-link>
-                            <router-link :to="{name: 'profile', params:{id: 'MyProfile', section: 'liked'}}" class="dropdown-item"><i class="ni ni-favourite-28"></i>Liked</router-link>
-                            <router-link :to="{name: 'profile', params:{id: 'MyProfile', section: 'following'}}" class="dropdown-item"><i class="fa fa-users"></i>Following</router-link>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="" @click="signOut"><i class="fa fa-sign-out"></i>Sign out</a>
+                <ul class="d-flex align-items-center mb-0">
+                    <base-dropdown class="nav-item" menu-classes="dropdown-menu-lg">
+                        <div slot="title" class="nav-link" data-toggle="dropdown" role="button" @click.prevent>
+                            <span class="nav-link-inner--text text-dark font-weight-bold">ReadMEs</span>
                         </div>
-                        <div v-else  class="dropdown-menu-inner" aria-labelledby="navbar-default_dropdown_1">
-                            <router-link to="/login"  class="dropdown-item"><i class="fa fa-sign-in"></i>Login</router-link>
-                            <div class="dropdown-divider"></div>
-                            <router-link to="/register"  class="dropdown-item"><i class="ni ni-badge"></i>Register</router-link>
+                        <div class="dropdown-menu-inner">
+                            <router-link :to="{name:'workbench', params:{id:'NewReadMe'}}" class="media d-flex align-items-center">
+                                <div class="icon icon-shape bg-gradient-info rounded-circle text-white">
+                                    <i class="ni ni-ruler-pencil"></i>
+                                </div>
+                                <div class="media-body ml-3">
+                                    <h5 class="heading text-info mb-md-1">New ReadME</h5>
+                                    <p class="description d-none d-md-inline-block mb-0">Create and design a new ReadME project</p>
+                                </div>
+                            </router-link>
+                            <router-link :to="{name: 'profile', params:{id: 'MyProfile'}}" v-if="user" class="media d-flex align-items-center">
+                                <div class="icon icon-shape bg-gradient-primary rounded-circle text-white">
+                                    <i class="ni ni-spaceship"></i>
+                                </div>
+                                <div class="media-body ml-3">
+                                    <h6 class="heading text-primary mb-md-1">My ReadMEs</h6>
+                                    <p class="description d-none d-md-inline-block mb-0">View and edit your ReadMEs</p>
+                                </div>
+                            </router-link>
+                            <RouterLink to="/explore" v-if="user" class="media d-flex align-items-center">
+                                <div class="icon icon-shape bg-gradient-warning rounded-circle text-white">
+                                    <i class="ni ni-planet"></i>
+                                </div>
+                                <div class="media-body ml-3">
+                                    <h5 class="heading text-warning mb-md-1">Explore</h5>
+                                    <p class="description d-none d-md-inline-block mb-0">Explore popular readmes and templates to use</p>
+                                </div>
+                            </RouterLink>
                         </div>
                     </base-dropdown>
-                </template>
+                </ul>
+                
+
+                    <div class="nav-item search-item" v-if="user">
+                        <base-input alternative placeholder="Search" addon-right-icon="fa fa-search" inputClasses="search-input" @keyup.enter="search()" v-model="searchInput"></base-input>
+                    </div>
+
+                <ul class="d-flex align-items-center mb-0">
+                    <template>
+                        <base-dropdown class="nav-item" menu-classes="dropdown-menu-sm">
+                            <div slot="title" class="nav-link" data-toggle="dropdown" role="button" @click.prevent aria-label="Profile options">
+                                <img v-if="user && user.photoURL" :src="user.photoURL" class="profile-image rounded-circle" width="30" height="30" />
+                                <i v-else class="fa fa-user-circle fa-2x text-dark"></i>
+                            </div>
+                            <div v-if="user" class="dropdown-menu-inner" aria-labelledby="navbar-default_dropdown_1">
+                                <router-link :to="{name:'profile', params:{id:'MyProfile'}}" class="dropdown-item"><i class="ni ni-single-02"></i>My profile</router-link>
+                                <router-link :to="{name: 'profile', params:{id: 'MyProfile', section: 'liked'}}" class="dropdown-item"><i class="ni ni-favourite-28"></i>Liked</router-link>
+                                <router-link :to="{name: 'profile', params:{id: 'MyProfile', section: 'following'}}" class="dropdown-item"><i class="fa fa-users"></i>Following</router-link>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="" @click="signOut"><i class="fa fa-sign-out"></i>Sign out</a>
+                            </div>
+                            <div v-else  class="dropdown-menu-inner" aria-labelledby="navbar-default_dropdown_1">
+                                <router-link to="/login"  class="dropdown-item"><i class="fa fa-sign-in"></i>Login</router-link>
+                                <div class="dropdown-divider"></div>
+                                <router-link to="/register"  class="dropdown-item"><i class="ni ni-badge"></i>Register</router-link>
+                            </div>
+                        </base-dropdown>
+                    </template>
+                </ul>
             </div>
         </base-nav>
 
         <base-nav class="navbar-mobile position-fixed bg-white shadow-sm" transparent type="" effect="">
             <router-link slot="brand" class="navbar-brand mr-lg-5" to="/">
-                <img src="img/brand/blue.png" alt="logo">
+                <img src="https://firebasestorage.googleapis.com/v0/b/readmeasy.appspot.com/o/images%2Fblue.png?alt=media&token=86cd20a2-eea2-4e6d-822b-1dc26cbc504d" alt="logo">
             </router-link>
 
             <div class="row" slot="content-header" slot-scope="{closeMenu}">
                 <div class="pl-5 col-10 collapse-brand d-flex w-100 justify-content-center mt-5">
-                    <router-link :to="{name:'profile', params:{id:'MyProfile'}}">
+                    <router-link v-if="user" :to="{name:'profile', params:{id:'MyProfile'}}">
                         <img v-if="user && user.photoURL" :src="user.photoURL" class="profile-image rounded-circle ml-3"/>
                         <i v-else class="fa fa-user-circle fa-5x text-dark w-100 h-auto ml-3"></i>
                     </router-link>
                 </div>
 
-                <div class="col-1 collapse-close position-absolute">
+                <div class="col-11 collapse-close position-absolute">
                     <close-button @click="closeMenu" id="close-button"></close-button>
                 </div>
+
+                <div v-if="user" class="m-2 ml-4 position-absolute" @click="signOut()">
+                    <i class="fa fa-sign-out fa-lg text-danger"></i>
+                </div>
                         
-                <router-link :to="{name:'profile', params:{id:'MyProfile'}}" class="w-100 text-center mt-3 text-primary mb-2"><span class="" >My profile</span></router-link>
+                <router-link v-if="user" :to="{name:'profile', params:{id:'MyProfile'}}" class="w-100 text-center mt-3 text-primary mb-2"><span class="" >My profile</span></router-link>
             </div>
 
             <ul class="navbar-nav align-items-center ml-lg-auto mt-4">
@@ -124,13 +130,13 @@
                     </li>
                 </template>
             </ul>
-            <div class="nav-bottom position-absolute">
-                <li v-if="user" class="nav-item nav-link">
+            <div class="mt-3">
+                <div v-if="user" >
                     <base-input alternative placeholder="Search" addon-left-icon="fa fa-search" class="search-mobile" @keyup.enter="search()" v-model="searchInput"></base-input>
-                </li>
-                <li class="nav-item nav-link">
+                </div>
+                <div class="mt-3">
                     <router-link :to="{name:'workbench', params:{id:'NewReadMe'}}"><base-button class="search-mobile" type="primary" icon="ni ni-ruler-pencil">New ReadME</base-button></router-link>
-                </li>
+                </div>
             </div>
 
         </base-nav>
@@ -222,6 +228,10 @@ nav {
     width: 90%;
 }
 
+.nav-link:hover {
+    cursor: pointer;
+}
+
 .navbar-mobile .nav-link .nav-link-inner--text {
     margin-left: 1rem!important;
 }
@@ -231,6 +241,7 @@ nav {
     font-size: 2.4vh!important;
     height: 6vh;
     padding: 0!important;
+    margin-bottom: 0 !important;
 }
 
 .search-mobile .form-control, .search-mobile .input-group-text {
@@ -275,10 +286,6 @@ nav {
 
     .collapse-close {
         right: 30!important;
-    }
-
-    .navbar-mobile .nav-bottom {
-        bottom: 40;
     }
 
     .profile-image {

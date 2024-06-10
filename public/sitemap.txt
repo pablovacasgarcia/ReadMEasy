@@ -1,0 +1,8 @@
+https://readmeasy.web.app/
+https://readmeasy.web.app/workbench/123
+https://readmeasy.web.app/workbench/456
+https://readmeasy.web.app/profile/123
+https://readmeasy.web.app/profile/456
+https://readmeasy.web.app/explore
+https://readmeasy.web.app/login
+https://readmeasy.web.app/register

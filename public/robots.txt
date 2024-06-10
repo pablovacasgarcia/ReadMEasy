@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /login/
+Disallow: /register/
+
+Allow: /workbench
+Allow: /profile
+Allow: /explore
+Allow: /
+
+Sitemap: https://readmeasy.web.app/sitemap.xml

@@ -120,7 +120,7 @@
                                 <img v-if="form.photoURL" :src="form.photoURL" class="form-image rounded-circle" />
                                 <img v-else src="img/theme/team-4-800x800.jpg" class="form-image rounded-circle" />
                             </div>
-                            <i class="fa fa-camera text-white position-absolute" style="top: 10; right: 10; background-color: #00000080; padding: 5px; border-radius: 50%; cursor: pointer;"></i>
+                            <i class="fa fa-camera text-white position-absolute" style="top: 0.5rem; right: 0.5rem; background-color: #00000080; padding: 5px; border-radius: 50%; cursor: pointer;"></i>
                         </div>
                         <input type="file" class="image-input position-absolute rounded-circle" @change="onImageChange">
                     </div>
@@ -149,13 +149,13 @@
             <div class="container d-flex flex-column" v-if="modalTitle=='Followers' || modalTitle=='Following'">
                 <div class="user-card border-bottom py-4" v-for="user in users" :key="user.id">
                     <div class="d-flex align-items-center justify-content-between">
-                        <router-link :to="{name:'profile', params:{id:user.id}}" class="user-info d-flex align-items-center">
+                        <div @click="openUser(user.id)" class="user-info d-flex align-items-center">
                             <img :src="user.photoURL" class="rounded-circle" width="50" height="50" />
                             <div class="d-flex flex-column ml-4">
                                 <span class="text-default">{{ user.fullName }}</span>
                                 <small class="text-primary">@{{ user.username }}</small>
                             </div>
-                        </router-link>
+                        </div>
 
                         <div v-if="user.id != currentUser.uid">
                             <i v-if="!user.followers || !user.followers.includes(currentUser.uid)" class="follow-icon fa fa-user-plus bg-primary text-white p-2 rounded" @click="toggleFollow(user)"></i>
@@ -182,20 +182,22 @@
                         <div v-if="currentUser && selectedReadme.user != currentUser.uid" class="w-100 d-flex flex-column">
                             <base-button v-if="selectedReadme.public" class="w-100" type="primary" @click="openReadme(selectedReadme)" icon="fa fa-pencil-square-o">Use this template</base-button>
 
-                            <div class="d-flex align-items-center justify-content-between mt-4">
-                                <router-link :to="{name:'profile', params:{id:selectedReadme.user}}" class="user-info d-flex align-items-center">
+                            <div v-if="selectedReadme.type != 'template'" class="d-flex align-items-center justify-content-between mt-4">
+                                <div @click="openUser(selectedReadme.user)" class="user-info d-flex align-items-center">
                                     <img :src="selectedReadme.photoURL" class="rounded-circle" width="50" height="50" />
                                     <div class="d-flex flex-column ml-4">
                                         <span class="text-default">{{ selectedReadme.fullName }}</span>
                                         <small class="text-primary">@{{ selectedReadme.userName }}</small>
                                     </div>
-                                </router-link>
+                                </div>
 
                                 <div v-if="selectedReadme.user != currentUser.uid">
                                     <i v-if="!selectedReadme.followers || !selectedReadme.followers.includes(currentUser.uid)" class="follow-icon fa fa-user-plus bg-primary text-white p-2 rounded" @click="toggleFollow({uid: selectedReadme.user, followers:selectedReadme.followers})"></i>
                                     <i v-else class="follow-icon fa fa-user-times text-primary border border-primary p-2 rounded" @click="toggleFollow({uid: selectedReadme.user, followers:selectedReadme.followers})"></i>
                                 </div>
                             </div>
+
+                            <span v-else class="text-default">{{ selectedReadme.fullName }}</span>
                         </div>
 
                         <div v-else class="w-100">
@@ -220,7 +222,7 @@
 <script>
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from '../../firebase';
-import { doc, getDoc, query, collection, where, getDocs, updateDoc, arrayRemove, arrayUnion, onSnapshot, userDoc  } from "firebase/firestore";
+import { doc, getDoc, query, collection, where, getDocs, updateDoc, arrayRemove, arrayUnion, onSnapshot  } from "firebase/firestore";
 import Modal from "@/components/Modal.vue";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
@@ -257,16 +259,12 @@ export default {
     mounted() {   
         this.getProfileData();
 
-        if (this.$route.params.section == 'liked') {
-            this.likedReadmes = true;            
-        } else if (this.$route.params.section == 'following') {
-            this.modal = true;
-            this.modalTitle = 'Following';
-        }
+        this.openSection();
     },
 
     watch: {
-        '$route.params.id': 'getProfileData'
+        '$route.params.id': 'getProfileData',
+        '$route.params.section': 'openSection'
     },
 
     computed: {
@@ -316,6 +314,19 @@ export default {
                 }
             }
         },
+
+        // Open section
+        openSection(){
+            if (this.$route.params.section) {
+                if (this.$route.params.section == 'following') {
+                    this.openModal('Following');
+                } else if (this.$route.params.section == 'liked') {
+                    this.likedReadmes = true;
+                } 
+            } else {
+                this.likedReadmes = false;
+            }
+        },
         
         // Get followers, following, likes and readmes count
         async updateCounts(userId){
@@ -325,8 +336,10 @@ export default {
             const readmesData = await Promise.all(snapshot.docs.map(async (docSnap) => {
                 const data = docSnap.data();
                 let userDoc='';
+                let userData = '';
                 if (data.user) {
                     userDoc = await getDoc(doc(db, 'user', data.user));
+                    userData = userDoc.data();
                 }
 
                 return {
@@ -335,10 +348,10 @@ export default {
                     preview: data.content,
                     likes: data.likes || [],
                     user: data.user,
-                    userName: userDoc ? userDoc.data().username : 'ReadMEasy Templates',
-                    photoURL: userDoc ? userDoc.data().photoURL : '',
-                    fullName: userDoc ? userDoc.data().fullName : 'ReadMEasy Templates',
-                    followers: userDoc ? userDoc.data().followers : [],
+                    userName: userData.username ? userData.username : 'ReadMEasy Templates',
+                    photoURL: userData.photoURL ? userData.photoURL : '',
+                    fullName: userData.fullName ? userData.fullName : 'ReadMEasy Templates',
+                    followers: userData.followers ? userData.followers : [],
                     description: data.description,
                 };
             }));
@@ -351,18 +364,20 @@ export default {
             const readmesData = await Promise.all(snapshot.docs.map(async (docSnap) => {
                 const data = docSnap.data();
                 let userDoc='';
+                let userData = '';
                 if (data.user) {
                     userDoc = await getDoc(doc(db, 'user', data.user));
+                    userData = userDoc.data();
                 }
 
                 return {
                     id: docSnap.id,
                     title: data.title,
                     preview: data.content,
-                    userName: userDoc ? userDoc.data().username : 'ReadMEasy Templates',
-                    photoURL: userDoc ? userDoc.data().photoURL : '',
-                    fullName: userDoc ? userDoc.data().fullName : 'ReadMEasy Templates',
-                    followers: userDoc ? userDoc.data().followers : [],
+                    userName: userData.username ? userData.username : 'ReadMEasy Templates',
+                    photoURL: userData.photoURL ? userData.photoURL : '',
+                    fullName: userData.fullName ? userData.fullName : 'ReadMEasy Templates',
+                    followers: userDoc ? userData.followers : [],
                     description: data.description,
                     user: data.user,
                     likes: data.likes || [],
@@ -373,7 +388,7 @@ export default {
             });
 
             // Get followers
-            let followersIds = this.user.followers;
+            let followersIds = this.user.followers ? this.user.followers : [];
             this.followers = [];
             followersIds.forEach(async (followerId) => {
                 const followerRef = doc(db, "user", followerId);
@@ -455,7 +470,18 @@ export default {
 
         // Open readme
         openReadme(readme){
+            document.body.classList.remove('modal-open');
             this.$router.push({name: 'workbench', params: {id: readme.id}});
+        },
+
+        // Open user profile
+        openUser(uid){
+            document.body.classList.remove('modal-open');
+            if (uid === this.currentUser.uid) {
+                this.$router.push({name: 'profile', params: {id: 'MyProfile'}});
+            } else {
+                this.$router.push({name: 'profile', params: {id: uid}});
+            }
         },
 
         // Update user profile
@@ -556,6 +582,10 @@ export default {
         cursor: pointer;
         color: black;
     }
+    
+    .user-info:hover {
+        cursor: pointer;
+    } 
 
     .username {
         font-size: 0.7rem;

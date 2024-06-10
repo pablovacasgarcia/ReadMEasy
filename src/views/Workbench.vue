@@ -4,7 +4,7 @@
         </div>
 
         <!-- Content -->
-        <div class="content container-fluid w-100 h-75 d-flex p-5 justify-content-center">
+        <div class="content container-fluid w-100 h-100 d-flex p-5 justify-content-center">
 
             <!-- My Sections -->
             <div id="sections">
@@ -16,9 +16,9 @@
                         <li v-for="(section, index) in mySections" :id="`section_${index}`" :key="`section_${index}`" class="section-container w-100 mb-4 h-max-content d-flex align-items-center flex-column">
                             
                             <!-- Section Card -->
-                            <div :class="['section-card', 'my-section', 'bg-white', 'p-4', 'rounded', 'd-flex', 'justify-content-between', 'align-items-center', 'display-5', 'mw-100', { 'section-card-active' : editing == section }]">
+                            <div :class="['section-card', 'my-section', 'bg-white', 'p-4', 'rounded', 'd-flex', 'justify-content-between', 'align-items-center', 'display-5', 'position-relative', 'w-100', { 'section-card-active' : editing == section }]">
                                 <div class="d-flex align-items-center position-relative w-100">   
-                                    <div class="d-flex position-absolute handle"> 
+                                    <div class="d-flex ml-0 position-absolute handle"> 
                                         <i class="fa fa-arrows-v"></i>
                                     </div>
                                     
@@ -28,7 +28,7 @@
                                     </div>
                                     
                                 </div> 
-                                <div class="section-actions d-flex">
+                                <div class="section-actions d-flex position-absolute">
                                     <i class="fa fa-pencil mr-2" @click="editSection(section)"></i>
                                     <i class="fa fa-trash" @click="deleteSection(index)"></i>
                                 </div>
@@ -143,7 +143,7 @@
                         <li v-for="(section, index) in mySections" :id="`section_${index}`" :key="`section_${index}`" class="section-container w-100 mb-4 h-max-content d-flex align-items-center flex-column">
                             
                             <!-- Section Card -->
-                            <div :class="['section-card', 'my-section', 'bg-white', 'p-4', 'rounded', 'd-flex', 'justify-content-between', 'align-items-center', 'display-5', 'w-100', { 'section-card-active' : editing == section }]">
+                            <div :class="['section-card', 'my-section', 'bg-white', 'p-4', 'rounded', 'd-flex', 'justify-content-between', 'align-items-center', 'display-5', 'position-relative', 'w-100', { 'section-card-active' : editing == section }]">
                                 <div class="d-flex align-items-center position-relative w-100">   
                                     <div class="d-flex position-absolute handle"> 
                                         <i class="fa fa-arrows-v"></i>
@@ -155,8 +155,8 @@
                                     </div>
                                     
                                 </div> 
-                                <div class="section-actions">
-                                    <i class="fa fa-pencil mr-2" @click="editSection(section)"></i>
+                                <div class="section-actions position-absolute">
+                                    <i class="fa fa-pencil mr-3" @click="editSection(section)"></i>
                                     <i class="fa fa-trash" @click="deleteSection(index)"></i>
                                 </div>
                             </div>
@@ -969,6 +969,10 @@ export default {
     padding: 0 2rem 0 2rem;
 }
 
+.section-shaped{
+    height: 100vh;
+}
+
 /* Style for list of sections */
 .section-list{
     overflow-y: auto;
@@ -1026,9 +1030,8 @@ export default {
 }
 
 .my-section .section-actions {
-    margin-left: -2rem;
+    right: 1rem;
     z-index: 1;
-    background-color: white;
     padding: 0.5rem;
 }
 
@@ -1082,7 +1085,7 @@ export default {
 .image-preview, .image-preview-mobile {
     width: 10rem;
     height: 10rem;
-    object-fit: cover;
+    object-fit: contain;
 }
 
 .skillIcons-list{
@@ -1107,7 +1110,7 @@ export default {
 /* Style for dragging handler */
 .handle{
     cursor: pointer;
-    left: -20;
+    left: -1rem;
     height: 4.5rem;
     border-radius: 2px 0 0 2px;
     width: 1.5rem;
@@ -1117,7 +1120,7 @@ export default {
 }
 
 .section-container:hover .handle{
-    display: inline;
+    display: block;
 }
 
 /* Style for preview container */
@@ -1209,6 +1212,12 @@ h2 span{
 
     .section-card i{
         opacity: 1;
+        font-size: 1.5rem;
+        background-color: white;
+    }
+
+    .my-section .section-actions{
+        background-color: white;
     }
 
 }

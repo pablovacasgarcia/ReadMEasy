@@ -1,17 +1,17 @@
 import Vue from "vue";
 import Router from "vue-router";
-import AppHeader from "./layout/AppHeader";
-import AppFooter from "./layout/AppFooter";
-import Landing from "./views/Landing.vue";
-import Login from "./views/Login.vue";
-import Register from "./views/Register.vue";
-import Profile from "./views/Profile.vue"; 
-import Workbench from "./views/Workbench.vue";
-import Explore from "./views/Explore.vue"; 
+import { auth } from "../firebase";
+const AppHeader = () => import("./layout/AppHeader");
+const Landing = () => import("./views/Landing.vue");
+const Login = () => import("./views/Login.vue");
+const Register = () => import("./views/Register.vue");
+const Profile = () => import("./views/Profile.vue");
+const Workbench = () => import("./views/Workbench.vue");
+const Explore = () => import("./views/Explore.vue");
 
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
   mode: "history",
   linkExactActiveClass: "active",
   routes: [
@@ -21,7 +21,6 @@ export default new Router({
       components: {
         header: AppHeader,
         default: Workbench,
-        footer: AppFooter
       }
     },
     {
@@ -30,7 +29,6 @@ export default new Router({
       components: {
         header: AppHeader,
         default: Landing,
-        footer: AppFooter
       }
     },
     {
@@ -39,7 +37,6 @@ export default new Router({
       components: {
         header: AppHeader,
         default: Login,
-        footer: AppFooter
       }
     },
     {
@@ -48,17 +45,16 @@ export default new Router({
       components: {
         header: AppHeader,
         default: Register,
-        footer: AppFooter
       }
     },
     {
-      path: '/profile/:id',
+      path: '/profile/:id/:section?',
       name: "profile",
       components: {
         header: AppHeader,
         default: Profile,
-        footer: AppFooter
-      }
+      },
+      meta: { requiresAuth: true }
     },
     {
       path: '/explore',
@@ -66,7 +62,14 @@ export default new Router({
       components: {
         header: AppHeader,
         default: Explore,
-        footer: AppFooter
+      },
+      meta: { requiresAuth: true } 
+    },
+    {
+      path: '*',
+      components: {
+        header: AppHeader,
+        default: Landing,
       }
     }
   ],
@@ -78,3 +81,16 @@ export default new Router({
     }
   }
 });
+
+router.beforeEach((to, from, next) => {
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  const isAuthenticated = auth.currentUser;
+
+  if (requiresAuth && !isAuthenticated) {
+    next('/'); 
+  } else {
+    next(); 
+  }
+});
+
+export default router;

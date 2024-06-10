@@ -79,10 +79,6 @@
                             <div class="text-center">
                                 <base-button type="primary" class="my-4" @click="signUpWithEmail">Create account</base-button>
                             </div>
-                            <base-alert class="notification pr-5 alert-dismissible" type="primary" v-show="notification">
-                                <strong>Completed!</strong> Check your email to verify your account.
-                                <button @click="notification = false" type="button" data-dismiss="alert" aria-label="Close" class="close"><span aria-hidden="true">×</span></button>                         
-                            </base-alert>
                             <base-alert class="notification pr-5 alert-dismissible" type="danger" v-show="error != ''">
                                 <strong>Ups!</strong> {{ error }}
                                 <button @click="error = false" type="button" data-dismiss="alert" aria-label="Close" class="close"><span aria-hidden="true">×</span></button>                         
@@ -120,7 +116,6 @@
         emailValid: true,
         usernameValid: true,
         passwordValid: true,
-        notification: false,
         error: ''
       };
     },
@@ -160,8 +155,6 @@
                     const user = result.user;
                     await updateProfile(user, { displayName: this.name });
                     await this.saveUserData(user);
-                    await sendEmailVerification(user);
-                    this.notification = true;
                     this.$router.push('/');
                 } catch (error) {
                     console.error('Error signing up with email: ', error.message);
@@ -249,4 +242,4 @@
         color: var(--danger);
     }
 </style>
-  
+  ../firebase
