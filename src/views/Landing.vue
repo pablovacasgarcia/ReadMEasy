@@ -56,29 +56,36 @@
                       </div>
                   </div>
               </div>
-              <div class="row align-items-center justify-content-between stars-and-coded">
-                  <div class="col-sm-4">
-                      <span class="text-white alpha-7 ml-3">Star me on</span>
-                      <a href="https://github.com/pablovacasgarcia/ReadMEasy" target="_blank" title="Support us on Github">
-                          <img src="img/brand/github-white-slim.png" style="height: 22px; margin-top: -3px" alt="GitHub Logo">
+              <div class="preview-container">
+                <div class="preview w-100 h-100 mt-5 border rounded">
+
+                </div>
+              </div>
+              <div class="w-100 d-flex align-items-center justify-content-between stars-and-coded mb-5">
+                  <div>
+                      <span class="font-weight-bold">Star me on</span>
+                      <a href="https://github.com/pablovacasgarcia/ReadMEasy" class="font-weight-bold" target="_blank" title="Support us on Github">
+                          GitHub
                       </a>
                   </div>
-                  <div class="col-sm-4 mt-4 mt-sm-0 text-right">
-                      <span class="text-white alpha-7">Coded by</span>
-                      <a href="https://github.com/pablovacasgarcia" class="text-white font-weight-bold" target="_blank">
+                  <div>
+                      <span class="font-weight-bold">Coded by</span>
+                      <a href="https://github.com/pablovacasgarcia" class="font-weight-bold" target="_blank">
                           Pablo Vacas García
                       </a>
                   </div>
               </div>
-          </div>
+          </div>          
       </div>
   </section>
 </template>
 
 <script>
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import AOS from 'aos';
 
 export default {
+  name: 'Landing',
   data() {
     return {
       currentUser: null
@@ -93,12 +100,31 @@ export default {
         this.currentUser = user;
       }
     });
+
+    AOS.init();
   }
 };
 </script>
 
 <style scoped>
-  .section-hero {
+  .shape {
     height: 100vh;
+  }
+
+  .section-hero {
+    min-height: 100vh;
+    height: fit-content;
+  }
+
+  .preview-container {
+    display: flex;
+    justify-content: center;
+    height: 80vh;
+  }
+
+  @media screen and (max-width: 991.5px){
+    .stars-and-coded {
+      flex-direction: column;
+    }
   }
 </style>

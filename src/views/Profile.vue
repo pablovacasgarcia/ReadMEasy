@@ -18,7 +18,7 @@
                         <div class="profile-info d-flex align-items-center px-5">
                             <div class="w-25 profile-image-container">
                                 <img v-if="user.photoURL" :src="user.photoURL" class="profile-image rounded-circle" />
-                                <img v-else src="img/theme/team-4-800x800.jpg" class="profile-image rounded-circle" />
+                                <img v-else src="https://firebasestorage.googleapis.com/v0/b/readmeasy.appspot.com/o/images%2Fcat-symbol-svgrepo-com.svg?alt=media&token=5baf8f00-3b2e-4157-8428-7db153bce3b8" class="profile-image rounded-circle" />
                             </div>
                             <div class="w-75 d-flex flex-column align-items-start">
                                 <div class="profile-name w-100 d-flex flex-row justify-content-between align-items-center">
@@ -116,9 +116,9 @@
                 <form @submit.prevent="updateProfile">
                     <div class="image-form w-100 d-flex justify-content-center mb-4 position-relative">
                         <div class="position-relative">
-                            <div>
+                            <div :class="['image-container', 'rounded-circle', 'p-1', {'image-error' : imageError}]">
                                 <img v-if="form.photoURL" :src="form.photoURL" class="form-image rounded-circle" />
-                                <img v-else src="img/theme/team-4-800x800.jpg" class="form-image rounded-circle" />
+                                <img v-else src="https://firebasestorage.googleapis.com/v0/b/readmeasy.appspot.com/o/images%2Fcat-symbol-svgrepo-com.svg?alt=media&token=5baf8f00-3b2e-4157-8428-7db153bce3b8" class="form-image rounded-circle" />
                             </div>
                             <i class="fa fa-camera text-white position-absolute" style="top: 0.5rem; right: 0.5rem; background-color: #00000080; padding: 5px; border-radius: 50%; cursor: pointer;"></i>
                         </div>
@@ -150,7 +150,8 @@
                 <div class="user-card border-bottom py-4" v-for="user in users" :key="user.id">
                     <div class="d-flex align-items-center justify-content-between">
                         <div @click="openUser(user.id)" class="user-info d-flex align-items-center">
-                            <img :src="user.photoURL" class="rounded-circle" width="50" height="50" />
+                            <img v-if="user.photoURL" :src="user.photoURL" class="rounded-circle" width="50" height="50" />
+                            <img v-else src="https://firebasestorage.googleapis.com/v0/b/readmeasy.appspot.com/o/images%2Fcat-symbol-svgrepo-com.svg?alt=media&token=5baf8f00-3b2e-4157-8428-7db153bce3b8" class="rounded-circle" width="50" height="50" />
                             <div class="d-flex flex-column ml-4">
                                 <span class="text-default">{{ user.fullName }}</span>
                                 <small class="text-primary">@{{ user.username }}</small>
@@ -184,7 +185,8 @@
 
                             <div v-if="selectedReadme.type != 'template'" class="d-flex align-items-center justify-content-between mt-4">
                                 <div @click="openUser(selectedReadme.user)" class="user-info d-flex align-items-center">
-                                    <img :src="selectedReadme.photoURL" class="rounded-circle" width="50" height="50" />
+                                    <img v-if="selectedReadme.photoURL" :src="selectedReadme.photoURL" class="rounded-circle" width="50" height="50" />
+                                    <img v-else src="https://firebasestorage.googleapis.com/v0/b/readmeasy.appspot.com/o/images%2Fcat-symbol-svgrepo-com.svg?alt=media&token=5baf8f00-3b2e-4157-8428-7db153bce3b8" class="rounded-circle" width="50" height="50" />
                                     <div class="d-flex flex-column ml-4">
                                         <span class="text-default">{{ selectedReadme.fullName }}</span>
                                         <small class="text-primary">@{{ selectedReadme.userName }}</small>
@@ -203,7 +205,7 @@
                         <div v-else class="w-100">
                             <div class="d-flex">
                                 <base-button class="w-50" type="primary" @click="openReadme(selectedReadme)" icon="fa fa-pencil">Edit</base-button>
-                                <base-button class="w-50" type="danger" @click="openReadme(selectedReadme)" icon="fa fa-trash">Delete</base-button>
+                                <base-button class="w-50" type="danger" @click="deleteReadme(selectedReadme)" icon="fa fa-trash">Delete</base-button>
                             </div>                            
                         </div>
 
@@ -222,7 +224,7 @@
 <script>
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from '../../firebase';
-import { doc, getDoc, query, collection, where, getDocs, updateDoc, arrayRemove, arrayUnion, onSnapshot  } from "firebase/firestore";
+import { doc, getDoc, query, collection, where, getDocs, updateDoc, arrayRemove, arrayUnion, onSnapshot, deleteDoc  } from "firebase/firestore";
 import Modal from "@/components/Modal.vue";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
@@ -252,7 +254,8 @@ export default {
                 location: '',
                 jobTitle: '',
                 description: ''
-            }
+            },
+            imageError: false,
         };
     },
 
@@ -420,6 +423,8 @@ export default {
                     jobTitle: this.user.jobTitle ? this.user.jobTitle : '',
                     description: this.user.description ? this.user.description : ''
                 };
+                
+                this.imageError = false;
             }
         },
 
@@ -474,6 +479,13 @@ export default {
             this.$router.push({name: 'workbench', params: {id: readme.id}});
         },
 
+        // Delete readme
+        async deleteReadme(readme){
+            const readmeRef = doc(db, 'readme', readme.id);
+            await deleteDoc(readmeRef);
+            this.readmeModal = false;
+        },
+
         // Open user profile
         openUser(uid){
             document.body.classList.remove('modal-open');
@@ -489,7 +501,7 @@ export default {
             // Get the file from the input element
             let file = document.querySelector('.image-input').files[0];
 
-            if (file) {
+            if (file && file.type.startsWith('image/')) {
                 // Create a storage reference
                 const storage = getStorage();
                 const storageRef = ref(storage, 'images/' + file.name);
@@ -521,12 +533,15 @@ export default {
         // Handle image change
         onImageChange(event) {
             const file = event.target.files[0];
-            if (file) {
+            if (file && file.type.startsWith('image/')) {
+                this.imageError = false;
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     this.form.photoURL = e.target.result;
                 };
                 reader.readAsDataURL(file);
+            } else {
+                this.imageError = true;
             }
         },
     }
@@ -635,6 +650,43 @@ export default {
     .profile-actions-mobile {
         display: none;
     }
+
+    .image-error {
+        border: 2px dashed var(--danger);
+    }
+
+/* Style to make it look like GitHub */
+.content>>>h1, .content>>>h2{
+    font-weight: bold;
+    border-bottom: 1px solid gainsboro;
+    margin-bottom: 2rem;
+}
+
+.content>>>h1{
+    font-size: 2rem;
+}
+
+.content>>>h2{
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.content>>>a{
+    color: var(--primary);
+    text-decoration: underline;
+    font-weight: 400;
+}
+
+.content>>>pre{
+    background-color: #f6f8fa;
+    border-radius: 5px;
+    padding: 1rem;
+    margin: 1rem 0;    
+}
+
+.content>>>pre p{
+    font-size: 0.8rem!important;
+}
 
     @media screen and (max-width: 991.5px) {
         .profile-info {

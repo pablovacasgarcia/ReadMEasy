@@ -105,9 +105,10 @@
 
                     <!-- Buttons -->
                     <div class="buttons">
-                        <base-button type="warning" @click="loadReadme()"><i class="fa fa-undo"></i></base-button>                        
-                        <base-button type="info" @click="showTitleModal = true"><i class="fa fa-floppy-o"></i></base-button>
-                        <base-button type="success" @click="downloadReadme"><i class="fa fa-download"></i></base-button>
+                        <base-button type="warning" @click="undo()"><i class="fa fa-undo"></i></base-button>     
+                        <base-button type="info" @click="redo()"><i class="fa fa-repeat"></i></base-button>                   
+                        <base-button type="success" @click="showTitleModal = true"><i class="fa fa-floppy-o"></i></base-button>
+                        <base-button type="primary" @click="downloadReadme()"><i class="fa fa-download"></i></base-button>
                     </div>
                 </header>
 
@@ -115,10 +116,11 @@
                 <div class="w-100 h-100 bg-white rounded preview-display p-5" id="preview-display"></div>
 
                 <!-- Mobile Buttons -->
-                <div class="buttons-mobile d-none justify-content-start mt-3">
-                        <base-button type="warning" @click="loadReadme()"><i class="fa fa-undo"></i></base-button>                        
-                        <base-button type="info" @click="showTitleModal = true"><i class="fa fa-floppy-o"></i></base-button>
-                        <base-button type="success" @click="downloadReadme()"><i class="fa fa-download"></i></base-button>
+                <div class="buttons-mobile d-none justify-content-between mt-3">
+                        <base-button type="warning" @click="undo()"><i class="fa fa-undo"></i></base-button>     
+                        <base-button type="info" @click="redo()"><i class="fa fa-repeat"></i></base-button>                   
+                        <base-button type="success" @click="showTitleModal = true"><i class="fa fa-floppy-o"></i></base-button>
+                        <base-button type="primary" @click="downloadReadme()"><i class="fa fa-download"></i></base-button>
                     </div>
             </div>
 
@@ -311,6 +313,8 @@ export default {
             },
             badges: { license:false, size:false, release:false, tag:false, commits:false, lastCommit:false, downloads:false, forks:false, stars:false, watchers:false, contributors:false, issues:false, pullRequests:false},
             readmeId: '',
+            history: [],
+            historyIndex: -1,
         };
     },
 
@@ -318,6 +322,15 @@ export default {
         const auth = getAuth();
         onAuthStateChanged(auth, user => {
             this.user = user;
+        });
+
+        // Event Listener for undo and redo
+        window.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'z') {
+                this.undo();
+            } else if (e.ctrlKey && e.key === 'y') {
+                this.redo();
+            }
         });
     },
 
@@ -337,6 +350,7 @@ export default {
         addSection(section) {
             this.mySections.push({ title: section.title, content: section.content });
             this.loadPreview();
+            this.saveHistory();
 
             // Switch to the mySections view on mobile
             if (window.innerWidth < 991.5) {
@@ -350,6 +364,7 @@ export default {
                 this.mySections.splice(index, 1);
             }
             this.loadPreview();
+            this.saveHistory();
         },
 
         // Load the readME preview
@@ -377,21 +392,21 @@ export default {
                 if (section.title == 'GitHub Stats') {
                     // Display the github stats
                     html += this.extractStats(section.content);
-                } else if (section.title === 'Code') {
+                } else if (section.title === 'Code' || section.title === 'Command') {
                     // Display the code or text
                     html += '<pre>' + section.content + '</pre>';
                 } else if (section.title === 'Image') {
                     // Display the image
-                    html += '<p>' + this.extractImg(section.content) + '</p>';
+                    html += '<p align="center">' + this.extractImg(section.content) + '</p>';
                 } else if (section.title === 'Skill Icons'){
                     // Display the skill icons
-                    html += '<p><img src="https://skillicons.dev/icons?i='+ this.extractText(section.content) +'" /></p>';
+                    html += '<p align="center"><img src="https://skillicons.dev/icons?i='+ this.extractText(section.content) +'" /></p>';
                 } else if (section.title === 'Repository Badges'){
                     // Display the repository badges
-                    html += '<p>' + this.extractBadges(section.content) + '</p>';
+                    html += '<p align="center">' + this.extractBadges(section.content) + '</p>';
                 } else if (section.title === 'Social Links') {
                     // Display the social links
-                    html += '<p>' + this.extractSocialLinks(section.content) + '</p>';
+                    html += '<p align="center">' + this.extractSocialLinks(section.content) + '</p>';
                 } else {
                     // Display the content
                     html += section.content;
@@ -421,19 +436,19 @@ export default {
                         markdown += this.turndownService.turndown(section.content) + '\n\n';
                         break;
                     case 'GitHub Stats':
-                        markdown += this.turndownService.turndown(this.extractStats(section.content)) + '\n\n';
+                        markdown += '<div align="center">\n' + this.extractStats(section.content) + '\n</div>\n\n';
                         break;
                     case 'Image':
-                        markdown += this.extractImg(section.content) + '\n\n';
+                        markdown += '<div align="center">\n' + this.extractImg(section.content) + '\n</div>\n\n';
                         break;
                     case 'Skill Icons':
-                        markdown += '<img src="https://skillicons.dev/icons?i='+ this.extractText(section.content) +'" />' + '\n\n';
+                        markdown += '<div align="center">\n' + '<img src="https://skillicons.dev/icons?i='+ this.extractText(section.content) +'" />' + '\n</div>\n\n';
                         break;
                     case 'Repository Badges':
-                        markdown += this.extractBadges(section.content) + '\n\n';
+                        markdown += '<div align="center">\n' + this.extractBadges(section.content) + '\n</div>\n\n';
                         break;
                     case 'Social Links':
-                        markdown += this.turndownService.turndown(this.extractSocialLinks(section.content)) + '\n\n';
+                        markdown += '<div align="center">\n' + this.extractSocialLinks(section.content) + '\n</div>\n\n';
                         break;
                     default:
                         markdown += this.turndownService.turndown(section.content) + '\n\n';
@@ -603,7 +618,7 @@ export default {
                         file = document.querySelector('.image-input-mobile').files[0];
                     }
 
-                    if (file) {
+                    if (file && file.type.startsWith('image/')) {
                         // Create a storage reference
                         const storage = getStorage();
                         const storageRef = ref(storage, 'images/' + file.name);
@@ -640,6 +655,7 @@ export default {
 
             this.editing = false;
             this.loadPreview();
+            this.saveHistory();
         },
 
         // Extract text from HTML content
@@ -685,19 +701,19 @@ export default {
                 trophy = paragraph.getAttribute('trophy') === 'true';
 
                 if (summary) {
-                statsContent += '<p><img src="http://github-profile-summary-cards.vercel.app/api/cards/profile-details?username='+this.extractText(htmlContent)+'&show_icons=true&locale=en&theme=transparent" alt="'+this.extractText(htmlContent)+'" /></p>';
+                statsContent += '<p align="center"><img src="http://github-profile-summary-cards.vercel.app/api/cards/profile-details?username='+this.extractText(htmlContent)+'&show_icons=true&locale=en&theme=transparent" alt="'+this.extractText(htmlContent)+'" /></p>';
                 }
                 if (stats) {
-                    statsContent += '<p><img src="https://github-readme-stats.vercel.app/api?username='+this.extractText(htmlContent)+'&show_icons=true&locale=en&rank_icon=github&theme=transparent" alt="'+this.extractText(htmlContent)+'" /></p>';
+                    statsContent += '<p align="center"><img src="https://github-readme-stats.vercel.app/api?username='+this.extractText(htmlContent)+'&show_icons=true&locale=en&rank_icon=github&theme=transparent" alt="'+this.extractText(htmlContent)+'" /></p>';
                 }
                 if (streak) {
-                    statsContent += '<p><img src="https://github-readme-streak-stats.herokuapp.com/?user='+this.extractText(htmlContent)+'&theme=transparent" alt="'+this.extractText(htmlContent)+'" /></p>';
+                    statsContent += '<p align="center"><img src="https://github-readme-streak-stats.herokuapp.com/?user='+this.extractText(htmlContent)+'&theme=transparent" alt="'+this.extractText(htmlContent)+'" /></p>';
                 }
                 if (languages) {
-                    statsContent += '<p><img src="https://github-readme-stats.vercel.app/api/top-langs?username='+this.extractText(htmlContent)+'&show_icons=true&locale=en&layout=pie&theme=transparent" alt="'+this.extractText(htmlContent)+'" /></p>';
+                    statsContent += '<p align="center"<img src="https://github-readme-stats.vercel.app/api/top-langs?username='+this.extractText(htmlContent)+'&show_icons=true&locale=en&layout=pie&theme=transparent" alt="'+this.extractText(htmlContent)+'" /></p>';
                 }
                 if (trophy) {
-                    statsContent += '<p><img src="https://github-profile-trophy.vercel.app/?username='+this.extractText(htmlContent)+'&theme=flat&column=7" alt="'+this.extractText(htmlContent)+'" /></p>';
+                    statsContent += '<p align="center"><img src="https://github-profile-trophy.vercel.app/?username='+this.extractText(htmlContent)+'&theme=flat&column=7" alt="'+this.extractText(htmlContent)+'" /></p>';
                 }
             }
 
@@ -843,7 +859,7 @@ export default {
                     // Add a new document with a generated ID
                     const docRef = await addDoc(collection(db, 'readme'), {
                         title: this.readmeTitle,
-                        description: this.readmeDescription,
+                        description: this.readmeDescription ? this.readmeDescription : '',
                         public: this.readmePublic,
                         user: this.user.uid,
                         sections: JSON.stringify(this.mySections),
@@ -857,6 +873,8 @@ export default {
                     const readmeRef = doc(db, "readme", this.readmeId);
                     await setDoc(readmeRef, {
                         title: this.readmeTitle,
+                        description: this.readmeDescription ? this.readmeDescription : '',
+                        public: this.readmePublic,
                         user: this.user.uid,
                         sections: JSON.stringify(this.mySections),
                         content: this.getHtml(),
@@ -865,8 +883,6 @@ export default {
 
                 // Clear the localStorage data
                 localStorage.removeItem('mySections');
-
-                console.log("Document written with ID: ", this.readmeId);
             } else {
                 // Save the readme to localStorage
                 localStorage.setItem('mySections', JSON.stringify(this.mySections));
@@ -906,6 +922,8 @@ export default {
                 }
                 
             }
+
+            this.saveHistory();
         },
 
         // Remove a field by index
@@ -922,13 +940,18 @@ export default {
         // Handle image change
         onImageChange(event) {
             const file = event.target.files[0];
-            if (file) {
+            if (file && file.type.startsWith('image/')) {
+                document.querySelector('.image-preview').parentNode.style.border= '2px dashed #cccc';
+                document.querySelector('.image-preview-mobile').parentNode.style.border= '2px dashed #cccc';
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     document.querySelector('.image-preview').src = e.target.result;
                     document.querySelector('.image-preview-mobile').src = e.target.result;
                 };
                 reader.readAsDataURL(file);
+            } else {
+                document.querySelector('.image-preview').parentNode.style.border= '2px dashed red';
+                document.querySelector('.image-preview-mobile').parentNode.style.border= '2px dashed red';
             }
         },
 
@@ -941,7 +964,37 @@ export default {
             a.href = url;
             a.download = 'README.md';
             a.click();
-        }
+        },
+
+        // Save the history of the workbench
+        saveHistory() {
+            // Remove the future history
+            if (this.historyIndex < this.history.length - 1) {
+                this.history = this.history.slice(0, this.historyIndex + 1);
+            }
+            // Add the current sections to the history
+            this.history.push(JSON.parse(JSON.stringify(this.mySections)));
+            this.historyIndex++;
+        },
+
+        // Undo the last action
+        undo() {
+            if (this.historyIndex > 0) {
+                this.historyIndex--;
+                this.mySections = JSON.parse(JSON.stringify(this.history[this.historyIndex]));
+                this.loadPreview();
+            } 
+        },
+
+        // Redo the last action
+        redo() {
+            if (this.historyIndex < this.history.length - 1) {
+                this.historyIndex++;
+                this.mySections = JSON.parse(JSON.stringify(this.history[this.historyIndex]));
+                this.loadPreview();
+            }
+        },
+
 
     },
     computed: {
@@ -954,7 +1007,7 @@ export default {
                 ghostClass: "fade",
                 axis: "y",
             };
-        }
+        },
     },
 }
 </script>
@@ -995,6 +1048,10 @@ export default {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.section-card:last-child, .section-container:last-child{
+    margin-bottom: 0 !important;
 }
 
 .section-card:hover, .section-card-active{
@@ -1132,10 +1189,12 @@ export default {
     word-wrap: break-word;
     overflow-wrap: break-word;
     border: 2px solid gainsboro;
+    color: black;
 }
 
 .preview-display>>>*{
     max-width: 100%!important;
+    font-weight: 400;
 }
 
 .preview-display>>>code{
@@ -1158,6 +1217,39 @@ h2 span{
 
 #mySectionsTitle{
     display: none;
+}
+
+/* Style to make it look like GitHub */
+.preview-display>>>h1, .preview-display>>>h2{
+    font-weight: bold;
+    border-bottom: 1px solid gainsboro;
+    margin-bottom: 2rem;
+}
+
+.preview-display>>>h1{
+    font-size: 2rem;
+}
+
+.preview-display>>>h2{
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.preview-display>>>a{
+    color: var(--primary);
+    text-decoration: underline;
+    font-weight: 400;
+}
+
+.preview-display>>>pre{
+    background-color: #f6f8fa;
+    border-radius: 5px;
+    padding: 1rem;
+    margin: 1rem 0;    
+}
+
+.preview-display>>>pre p{
+    font-size: 0.8rem!important;
 }
 
 
@@ -1194,9 +1286,6 @@ h2 span{
         padding: 1rem!important;
     }
 
-    #preview .buttons{
-        display: none!important;
-    }
 
     #preview>.buttons-mobile{
         display: flex!important;

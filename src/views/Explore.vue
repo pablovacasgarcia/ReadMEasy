@@ -29,7 +29,8 @@
         <div class="user-card border-bottom py-4" v-for="user in search" :key="user.id" v-if="user.uid != currentUser.uid">
             <div class="d-flex align-items-center justify-content-between">
                 <div @click="openUser(user.uid)" class="user-info d-flex align-items-center">
-                    <img :src="user.photoURL" class="rounded-circle" width="50" height="50" />
+                    <img v-if="user.photoURL" :src="user.photoURL" class="rounded-circle" width="50" height="50" />
+                    <img v-else src="https://firebasestorage.googleapis.com/v0/b/readmeasy.appspot.com/o/images%2Fcat-symbol-svgrepo-com.svg?alt=media&token=5baf8f00-3b2e-4157-8428-7db153bce3b8" class="rounded-circle" width="50" height="50" />
                     <div class="d-flex flex-column ml-4">
                         <span class="text-default">{{ user.fullName }}</span>
                         <small class="text-primary">@{{ user.username }}</small>
@@ -69,7 +70,8 @@
 
                             <div v-if="selectedReadme.type != 'template'" class="d-flex align-items-center justify-content-between mt-4">
                                 <div @click="openUser(selectedReadme.user)" class="user-info d-flex align-items-center">
-                                    <img :src="selectedReadme.photoURL" class="rounded-circle" width="50" height="50" />
+                                    <img v-if="selectedReadme.photoURL" :src="selectedReadme.photoURL" class="rounded-circle" width="50" height="50" />
+                                    <img v-else src="https://firebasestorage.googleapis.com/v0/b/readmeasy.appspot.com/o/images%2Fcat-symbol-svgrepo-com.svg?alt=media&token=5baf8f00-3b2e-4157-8428-7db153bce3b8" class="rounded-circle" width="50" height="50" />
                                     <div class="d-flex flex-column ml-4">
                                         <span class="text-default">{{ selectedReadme.fullName }}</span>
                                         <small class="text-primary">@{{ selectedReadme.userName }}</small>
@@ -393,6 +395,10 @@ export default {
   cursor: pointer;
 } 
 
+.user-info .rounded-circle{
+  object-fit: cover;
+}
+
 .username {
   font-size: 0.7rem;
   margin-top: -1rem;
@@ -444,6 +450,39 @@ export default {
     .readme-follow:hover {
         cursor: pointer;
     }
+
+    /* Style to make it look like GitHub */
+.content>>>h1, .content>>>h2{
+    font-weight: bold;
+    border-bottom: 1px solid gainsboro;
+    margin-bottom: 2rem;
+}
+
+.content>>>h1{
+    font-size: 2rem;
+}
+
+.content>>>h2{
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.content>>>a{
+    color: var(--primary);
+    text-decoration: underline;
+    font-weight: 400;
+}
+
+.content>>>pre{
+    background-color: #f6f8fa;
+    border-radius: 5px;
+    padding: 1rem;
+    margin: 1rem 0;    
+}
+
+.content>>>pre p{
+    font-size: 0.8rem!important;
+}
 
 @media screen and (max-width: 991.5px) {
   .header {

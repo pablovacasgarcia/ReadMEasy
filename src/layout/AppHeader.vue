@@ -61,7 +61,7 @@
                         <base-dropdown class="nav-item" menu-classes="dropdown-menu-sm">
                             <div slot="title" class="nav-link" data-toggle="dropdown" role="button" @click.prevent aria-label="Profile options">
                                 <img v-if="user && user.photoURL" :src="user.photoURL" class="profile-image rounded-circle" width="30" height="30" />
-                                <i v-else class="fa fa-user-circle fa-2x text-dark"></i>
+                                <img v-else src="https://firebasestorage.googleapis.com/v0/b/readmeasy.appspot.com/o/images%2Fcat-symbol-svgrepo-com.svg?alt=media&token=5baf8f00-3b2e-4157-8428-7db153bce3b8" class="profile-image rounded-circle" width="30" height="30" />
                             </div>
                             <div v-if="user" class="dropdown-menu-inner" aria-labelledby="navbar-default_dropdown_1">
                                 <router-link :to="{name:'profile', params:{id:'MyProfile'}}" class="dropdown-item"><i class="ni ni-single-02"></i>My profile</router-link>
@@ -90,7 +90,7 @@
                 <div class="pl-5 col-10 collapse-brand d-flex w-100 justify-content-center mt-5">
                     <router-link v-if="user" :to="{name:'profile', params:{id:'MyProfile'}}">
                         <img v-if="user && user.photoURL" :src="user.photoURL" class="profile-image rounded-circle ml-3"/>
-                        <i v-else class="fa fa-user-circle fa-5x text-dark w-100 h-auto ml-3"></i>
+                        <img v-else src="https://firebasestorage.googleapis.com/v0/b/readmeasy.appspot.com/o/images%2Fcat-symbol-svgrepo-com.svg?alt=media&token=5baf8f00-3b2e-4157-8428-7db153bce3b8" class="profile-image rounded-circle ml-3"/>
                     </router-link>
                 </div>
 
