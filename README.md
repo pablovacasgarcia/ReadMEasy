@@ -57,15 +57,9 @@ npm run dev
 </div>
 
 <div align="center">
-![pablovacasgarcia](http://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=pablovacasgarcia&show_icons=true&locale=en&theme=transparent)
-
-![pablovacasgarcia](https://github-readme-stats.vercel.app/api?username=pablovacasgarcia&show_icons=true&locale=en&rank_icon=github&theme=transparent)
-
-![pablovacasgarcia](https://github-readme-streak-stats.herokuapp.com/?user=pablovacasgarcia&theme=transparent)
-
-![pablovacasgarcia](https://github-profile-trophy.vercel.app/?username=pablovacasgarcia&theme=flat&column=7)
+<p align="center"><img src="http://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=pablovacasgarcia&show_icons=true&locale=en&theme=transparent" alt="pablovacasgarcia" /></p><p align="center"><img src="https://github-readme-stats.vercel.app/api?username=pablovacasgarcia&show_icons=true&locale=en&rank_icon=github&theme=transparent" alt="pablovacasgarcia" /></p><p align="center"><img src="https://github-readme-streak-stats.herokuapp.com/?user=pablovacasgarcia&theme=transparent" alt="pablovacasgarcia" /></p><p align="center"<img src="https://github-readme-stats.vercel.app/api/top-langs?username=pablovacasgarcia&show_icons=true&locale=en&layout=pie&theme=transparent" alt="pablovacasgarcia" /></p><p align="center"><img src="https://github-profile-trophy.vercel.app/?username=pablovacasgarcia&theme=flat&column=7" alt="pablovacasgarcia" /></p>
 </div>
 
 <div align="center">
-[![](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://instagram.com/pablovacass)[![](https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:pablovacasgarcia@gmail.com)
+<a href="https://instagram.com/pablovacass"><img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white"/></a><a href="mailto:pablovacasgarcia@gmail.com"><img src="https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white"/></a>
 </div>
