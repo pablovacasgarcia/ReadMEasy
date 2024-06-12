@@ -11,14 +11,14 @@
                 <h2 class="mb-5">My Sections</h2>
 
                 <!-- Draggable Sections -->
-                <draggable v-model="mySections" group="sections" class="list-unstyled section-list pr-1 w-100" v-bind="dragOptions" handle=".handle" :end="loadPreview()">
+                <draggable v-model="mySections" group="sections" class="list-unstyled section-list pr-1 w-100" v-bind="dragOptions" handle=".handle" @change="saveHistory">
                     <transition-group type="transition">
                         <li v-for="(section, index) in mySections" :id="`section_${index}`" :key="`section_${index}`" class="section-container w-100 mb-4 h-max-content d-flex align-items-center flex-column">
                             
                             <!-- Section Card -->
                             <div :class="['section-card', 'my-section', 'bg-white', 'p-4', 'rounded', 'd-flex', 'justify-content-between', 'align-items-center', 'display-5', 'position-relative', 'w-100', { 'section-card-active' : editing == section }]">
-                                <div class="d-flex align-items-center position-relative w-100">   
-                                    <div class="d-flex ml-0 position-absolute handle"> 
+                                <div class="d-flex align-items-center position-relative w-100 handle">   
+                                    <div class="d-flex ml-0"> 
                                         <i class="fa fa-arrows-v"></i>
                                     </div>
                                     
@@ -71,8 +71,12 @@
                                     <base-checkbox v-model="githubStats.trophy">Trophy</base-checkbox>
                                 </div>
 
-                                <div v-else-if="section.title=='Skill Icons'" class="skillIcons-list m-2">
-                                    <base-checkbox v-for="(icon, key) in skillIcons" :key="key" v-model="skillIcons[key]">{{ key }}</base-checkbox>
+                                <div v-else-if="section.title=='Skill Icons'">
+                                    <base-input alternative type="text" v-model="searchQuery" @input="scrollToCheckbox" placeholder="Search Skill" />
+
+                                    <div class="skillIcons-list m-2">
+                                        <base-checkbox v-for="(icon, key) in skillIcons" :key="key" :id="key" v-model="skillIcons[key]">{{ key }}</base-checkbox>
+                                    </div>
                                 </div>
 
                                 <base-input v-else-if="section.title==='Link'" class="field-input m-2" v-model="linkUrl" placeholder="URL link"></base-input>
@@ -113,7 +117,7 @@
                 </header>
 
                 <!-- Preview Display -->
-                <div class="w-100 h-100 bg-white rounded preview-display p-5" id="preview-display"></div>
+                <div class="w-100 bg-white rounded preview-display p-5" id="preview-display"></div>
 
                 <!-- Mobile Buttons -->
                 <div class="buttons-mobile d-none justify-content-between mt-3">
@@ -140,14 +144,14 @@
                 </ul>
 
                 <!-- Draggable mobile Sections -->
-                <draggable id="mobile-sections-list" v-model="mySections" group="sections" class="d-none list-unstyled section-list" v-bind="dragOptions" handle=".handle" :end="loadPreview()">
+                <draggable id="mobile-sections-list" v-model="mySections" group="sections" class="d-none list-unstyled section-list" v-bind="dragOptions" handle=".handle" @change="saveHistory">
                     <transition-group type="transition">
                         <li v-for="(section, index) in mySections" :id="`section_${index}`" :key="`section_${index}`" class="section-container w-100 mb-4 h-max-content d-flex align-items-center flex-column">
                             
                             <!-- Section Card -->
                             <div :class="['section-card', 'my-section', 'bg-white', 'p-4', 'rounded', 'd-flex', 'justify-content-between', 'align-items-center', 'display-5', 'position-relative', 'w-100', { 'section-card-active' : editing == section }]">
-                                <div class="d-flex align-items-center position-relative w-100">   
-                                    <div class="d-flex position-absolute handle"> 
+                                <div class="d-flex align-items-center position-relative w-100 handle">   
+                                    <div class="d-flex"> 
                                         <i class="fa fa-arrows-v"></i>
                                     </div>
                                     
@@ -200,8 +204,12 @@
                                     <base-checkbox v-model="githubStats.trophy">Trophy</base-checkbox>
                                 </div>
 
-                                <div v-else-if="section.title=='Skill Icons'" class="skillIcons-list m-2">
-                                    <base-checkbox v-for="(icon, key) in skillIcons" :key="key" v-model="skillIcons[key]">{{ key }}</base-checkbox>
+                                <div v-else-if="section.title=='Skill Icons'">
+                                    <base-input alternative type="text" v-model="searchQuery" @input="scrollToCheckbox" placeholder="Search Skill" />
+
+                                    <div class="skillIcons-list m-2">
+                                        <base-checkbox v-for="(icon, key) in skillIcons" :key="key" :id="key+'-mobile'" v-model="skillIcons[key]">{{ key }}</base-checkbox>
+                                    </div>
                                 </div>
 
                                 <base-input v-else-if="section.title==='Link'" class="field-input m-2" v-model="linkUrl" placeholder="URL link"></base-input>
@@ -255,6 +263,22 @@ export default {
     components: {
         draggable,
         Modal
+    },
+
+    watch: {
+        mySections: {
+            handler: function() {
+                this.loadPreview();
+            },
+            deep: true
+        }
+    },
+
+    props: {
+        sectionsProp: {
+            type: String,
+            required: false
+        }
     },
 
     data() {
@@ -315,6 +339,7 @@ export default {
             readmeId: '',
             history: [],
             historyIndex: -1,
+            searchQuery: '',
         };
     },
 
@@ -332,6 +357,10 @@ export default {
                 this.redo();
             }
         });
+
+        if (this.sectionsProp) {
+            this.mySections = JSON.parse(this.sectionsProp);
+        }
     },
 
     created() {
@@ -349,7 +378,6 @@ export default {
         // Add a section to the workbench
         addSection(section) {
             this.mySections.push({ title: section.title, content: section.content });
-            this.loadPreview();
             this.saveHistory();
 
             // Switch to the mySections view on mobile
@@ -363,7 +391,6 @@ export default {
             if (index !== -1) {
                 this.mySections.splice(index, 1);
             }
-            this.loadPreview();
             this.saveHistory();
         },
 
@@ -480,6 +507,8 @@ export default {
                 document.getElementById('codeTitle').classList.add('unactive');
                 this.code = false;
             }
+
+            this.loadPreview();
         },
 
         // Switch between mySections and addSections
@@ -654,7 +683,6 @@ export default {
             section.content = tempDiv.innerHTML;
 
             this.editing = false;
-            this.loadPreview();
             this.saveHistory();
         },
 
@@ -740,50 +768,53 @@ export default {
             tempDiv.innerHTML = htmlContent;
 
             let paragraph = tempDiv.querySelector('p');
-            if (paragraph) {
+            let span = tempDiv.querySelector('span');
+            console.log(this.extractText(span))
+            if (paragraph && span) {
                 let badges = paragraph.getAttribute('badges').split(',');
                 let badgesContent = "";
+                let text = paragraph.innerHTML+"/"+span.innerHTML;
 
                 badges.forEach(badge => {
                     switch (badge){
                         case 'license':
-                            badgesContent += '<img src="https://img.shields.io/github/license/'+this.extractText(htmlContent)+'?style=flat&color=%2311cdef" />';
+                            badgesContent += '<img src="https://img.shields.io/github/license/'+text+'?style=flat&color=%2311cdef" />';
                             break;
                         case 'size':
-                            badgesContent += '<img src="https://img.shields.io/github/repo-size/'+this.extractText(htmlContent)+'?style=flat&color=%2311cdef" />';
+                            badgesContent += '<img src="https://img.shields.io/github/repo-size/'+text+'?style=flat&color=%2311cdef" />';
                             break;
                         case 'release':
-                            badgesContent += '<img src="https://img.shields.io/github/v/release/'+this.extractText(htmlContent)+'?style=flat&color=%2311cdef" />';
+                            badgesContent += '<img src="https://img.shields.io/github/v/release/'+text+'?style=flat&color=%2311cdef" />';
                             break;
                         case 'tag':
-                            badgesContent += '<img src="https://img.shields.io/github/v/tag/'+this.extractText(htmlContent)+'?style=flat&color=%2311cdef" />';
+                            badgesContent += '<img src="https://img.shields.io/github/v/tag/'+text+'?style=flat&color=%2311cdef" />';
                             break;
                         case 'commits':
-                            badgesContent += '<img src="https://img.shields.io/github/commits-since/'+this.extractText(htmlContent)+'/latest?style=flat&color=%2311cdef" />';
+                            badgesContent += '<img src="https://img.shields.io/github/commits-since/'+text+'/latest?style=flat&color=%2311cdef" />';
                             break;
                         case 'lastCommit':
-                            badgesContent += '<img src="https://img.shields.io/github/last-commit/'+this.extractText(htmlContent)+'?style=flat&color=%2311cdef" />';
+                            badgesContent += '<img src="https://img.shields.io/github/last-commit/'+text+'?style=flat&color=%2311cdef" />';
                             break;
                         case 'downloads':
-                            badgesContent += '<img src="https://img.shields.io/github/downloads/'+this.extractText(htmlContent)+'/total?style=flat&color=%2311cdef" />';
+                            badgesContent += '<img src="https://img.shields.io/github/downloads/'+text+'/total?style=flat&color=%2311cdef" />';
                             break;
                         case 'forks':
-                            badgesContent += '<img src="https://img.shields.io/github/forks/'+this.extractText(htmlContent)+'?style=flat&color=%2311cdef" />';
+                            badgesContent += '<img src="https://img.shields.io/github/forks/'+text+'?style=flat&color=%2311cdef" />';
                             break;
                         case 'stars':
-                            badgesContent += '<img src="https://img.shields.io/github/stars/'+this.extractText(htmlContent)+'?style=flat&color=%2311cdef" />';
+                            badgesContent += '<img src="https://img.shields.io/github/stars/'+text+'?style=flat&color=%2311cdef" />';
                             break;
                         case 'watchers':
-                            badgesContent += '<img src="https://img.shields.io/github/watchers/'+this.extractText(htmlContent)+'?style=flat&color=%2311cdef" />';
+                            badgesContent += '<img src="https://img.shields.io/github/watchers/'+text+'?style=flat&color=%2311cdef" />';
                             break;
                         case 'contributors':
-                            badgesContent += '<img src="https://img.shields.io/github/contributors/'+this.extractText(htmlContent)+'?style=flat&color=%2311cdef" />';
+                            badgesContent += '<img src="https://img.shields.io/github/contributors/'+text+'?style=flat&color=%2311cdef" />';
                             break;
                         case 'issues':
-                            badgesContent += '<img src="https://img.shields.io/github/issues/'+this.extractText(htmlContent)+'?style=flat&color=%2311cdef" />';
+                            badgesContent += '<img src="https://img.shields.io/github/issues/'+text+'?style=flat&color=%2311cdef" />';
                             break;
                         case 'pullRequests':
-                            badgesContent += '<img src="https://img.shields.io/github/issues-pr/'+this.extractText(htmlContent)+'?style=flat&color=%2311cdef" />';
+                            badgesContent += '<img src="https://img.shields.io/github/issues-pr/'+text+'?style=flat&color=%2311cdef" />';
                             break;
                     }
                 });
@@ -982,7 +1013,6 @@ export default {
             if (this.historyIndex > 0) {
                 this.historyIndex--;
                 this.mySections = JSON.parse(JSON.stringify(this.history[this.historyIndex]));
-                this.loadPreview();
             } 
         },
 
@@ -991,10 +1021,20 @@ export default {
             if (this.historyIndex < this.history.length - 1) {
                 this.historyIndex++;
                 this.mySections = JSON.parse(JSON.stringify(this.history[this.historyIndex]));
-                this.loadPreview();
             }
         },
 
+        // Scroll to the Skill Icons checkbox
+        scrollToCheckbox() {
+            const query = this.searchQuery.toLowerCase();
+            const matchedKey = Object.keys(this.skillIcons).find(key => key.toLowerCase().startsWith(query));
+            if (matchedKey) {
+                const checkbox = document.getElementById(matchedKey);
+                checkbox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                const checkboxMobile = document.getElementById(matchedKey+'-mobile');
+                checkboxMobile.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        },
 
     },
     computed: {
@@ -1084,6 +1124,8 @@ export default {
 
 .section-actions i{
     left: 0;
+    background-color: white;
+    padding: 0.1rem;
 }
 
 .my-section .section-actions {
@@ -1167,13 +1209,6 @@ export default {
 /* Style for dragging handler */
 .handle{
     cursor: pointer;
-    left: -1rem;
-    height: 4.5rem;
-    border-radius: 2px 0 0 2px;
-    width: 1.5rem;
-    align-items: center!important;
-    justify-content: center!important;
-    transition: all 0.5s ease;  
 }
 
 .section-container:hover .handle{
@@ -1182,6 +1217,7 @@ export default {
 
 /* Style for preview container */
 .preview-display {
+    height: 100%;
     overflow-y: auto;
     scrollbar-color: var(--info) transparent;
     scrollbar-width: thin;
@@ -1282,10 +1318,13 @@ h2 span{
     }
 
     #preview>.preview-display{
-        height: 70vh!important;
+        height: 70vh;
         padding: 1rem!important;
     }
 
+    #preview .buttons {
+        display: none!important;
+    }
 
     #preview>.buttons-mobile{
         display: flex!important;
@@ -1302,7 +1341,6 @@ h2 span{
     .section-card i{
         opacity: 1;
         font-size: 1.5rem;
-        background-color: white;
     }
 
     .my-section .section-actions{

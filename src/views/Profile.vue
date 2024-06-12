@@ -29,7 +29,7 @@
                                         </div>
 
                                         <div class="profile-actions-mobile">
-                                            <div v-if="currentUser && user.id != currentUser.uid">
+                                            <div v-if="currentUser && user.uid != currentUser.uid">
                                                 <base-button v-if="!user.followers || !user.followers.includes(currentUser.uid)" class="follow-button" type="primary" icon="fa fa-user-plus" @click="toggleFollow(user)"><span class="profile-button-text">Follow</span></base-button>
                                                 <base-button v-else outline type="primary" icon="fa fa-user-times" class="follow-button" @click="toggleFollow(user)"><span class="profile-button-text">Unfollow</span></base-button>
                                             </div>
@@ -52,7 +52,7 @@
                                     </div>
 
                                     <div class="profile-actions">
-                                        <div v-if="currentUser && user.id != currentUser.uid">
+                                        <div v-if="currentUser && user.uid != currentUser.uid">
                                             <base-button v-if="!user.followers || !user.followers.includes(currentUser.uid)" class="follow-button" type="primary" icon="fa fa-user-plus" @click="toggleFollow(user)">Follow</base-button>
                                             <base-button v-else outline type="primary" icon="fa fa-user-times" class="follow-button" @click="toggleFollow(user)">Unfollow</base-button>
                                         </div>
@@ -62,7 +62,7 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <div class="font-weight-bold mb-3">{{ user.jobTitle }}<span class="font-weight-light" v-if="user.location">, <i class="fa fa-map-marker ml-2"></i> {{ user.location }}</span></div>
+                                    <div class="font-weight-bold mb-3"><span class="mr-3">{{ user.jobTitle }}</span><span class="font-weight-light" v-if="user.location"><i class="fa fa-map-marker"></i> {{ user.location }}</span></div>
                                     <div class="description text-justify">{{ user.description }}</div>
                                 </div>
                             </div>
@@ -147,9 +147,19 @@
                 </form>
             </div>
             <div class="container d-flex flex-column" v-if="modalTitle=='Followers' || modalTitle=='Following'">
-                <div class="user-card border-bottom py-4" v-for="user in users" :key="user.id">
+                <div v-if="users.length == 0" class="text-center m-3">
+                    <div v-if="user.uid != currentUser.uid">
+                        <span v-if="modalTitle=='Followers'">This user has no followers yet.</span>
+                        <span v-else>This user is not following anybody yet.</span>
+                    </div>
+                    <div v-else>
+                        <span v-if="modalTitle=='Followers'">You have no followers yet.</span>
+                        <span v-else>You are not following anybody yet.</span>
+                    </div>
+                </div>
+                <div class="user-card border-bottom py-4" v-for="user in users" :key="user.uid">
                     <div class="d-flex align-items-center justify-content-between">
-                        <div @click="openUser(user.id)" class="user-info d-flex align-items-center">
+                        <div @click="openUser(user.uid)" class="user-info d-flex align-items-center">
                             <img v-if="user.photoURL" :src="user.photoURL" class="rounded-circle" width="50" height="50" />
                             <img v-else src="https://firebasestorage.googleapis.com/v0/b/readmeasy.appspot.com/o/images%2Fcat-symbol-svgrepo-com.svg?alt=media&token=5baf8f00-3b2e-4157-8428-7db153bce3b8" class="rounded-circle" width="50" height="50" />
                             <div class="d-flex flex-column ml-4">
@@ -158,7 +168,7 @@
                             </div>
                         </div>
 
-                        <div v-if="user.id != currentUser.uid">
+                        <div v-if="user.uid != currentUser.uid">
                             <i v-if="!user.followers || !user.followers.includes(currentUser.uid)" class="follow-icon fa fa-user-plus bg-primary text-white p-2 rounded" @click="toggleFollow(user)"></i>
                             <i v-else class="follow-icon fa fa-user-times text-primary border border-primary p-2 rounded" @click="toggleFollow(user)"></i>
                         </div>
@@ -300,7 +310,7 @@ export default {
                     const userRef = doc(db, "user", this.currentUser.uid);
                     const userSnap = await getDoc(userRef);
                     if (userSnap.exists()) {
-                        this.user = {id: user.uid, ...userSnap.data()};
+                        this.user = {uid: user.uid, ...userSnap.data()};
                         this.updateCounts(user.uid);
                     } else {
                         console.log("No such user document!");
@@ -310,7 +320,7 @@ export default {
                 const userRef = doc(db, "user", this.userId);
                 const userSnap = await getDoc(userRef);
                 if (userSnap.exists()) {
-                    this.user = userSnap.data();
+                    this.user = {uid: userSnap.id, ...userSnap.data()};
                     this.updateCounts(this.userId);
                 } else {
                     console.log("No such user document!");
@@ -397,7 +407,7 @@ export default {
                 const followerRef = doc(db, "user", followerId);
                 const followerSnap = await getDoc(followerRef);
                 if (followerSnap.exists()) {
-                    this.followers.push({id: followerSnap.id, ...followerSnap.data()});
+                    this.followers.push({uid: followerSnap.id, ...followerSnap.data()});
                 } else {
                     console.log("No such follower document!");
                 }
@@ -406,7 +416,7 @@ export default {
             // Get following
             const followingQuery = query(collection(db, 'user'), where('followers', 'array-contains', userId));
             const followingSnap = await getDocs(followingQuery);
-            this.following = followingSnap.docs.map(doc => {return {id: doc.id, ...doc.data()};});
+            this.following = followingSnap.docs.map(doc => {return {uid: doc.id, ...doc.data()};});
         },
 
         // Open modal
@@ -430,6 +440,7 @@ export default {
 
         // Follow/Unfollow user
         async toggleFollow(user) {
+            console.log(user);
             const userRef = doc(db, 'user', user.uid);
             if (user.followers.includes(this.currentUser.uid)) {
                 await updateDoc(userRef, {
