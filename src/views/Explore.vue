@@ -1,6 +1,8 @@
 <template>
     <section class="section section-shaped section-lg my-0">
       <div class="shape shape-style-1 bg-gradient-white"></div>
+
+      <!-- Explore Header -->
       <div class="header bg-gradient-primary text-white position-relative w-100">
         <div class="container d-flex flex-column align-items-center">
           <base-input alternative class="search-bar mt-5 w-100" v-model="searchQuery" placeholder="Search..."  addon-right-icon="fa fa-search"></base-input>
@@ -12,6 +14,8 @@
           <div class="triangle" :style="{ left: trianglePosition }"></div>
         </div>
       </div>
+
+      <!-- Explore Readmes -->
       <div class="container pt-lg-md d-flex flex-wrap justify-content-center" v-if="activeSection=='readmes' || activeSection=='templates'">
         <div v-for="readme in search" :key="readme.id" class="readme-card d-flex flex-column justify-content-center" v-if="readme.user !=  currentUser.uid">
           <div class="preview w-100 mb-3 p-4 rounded" @click="openReadmeModal(readme)">
@@ -25,6 +29,8 @@
           <span class="username text-primary">@{{ readme.userName }}</span>
         </div>
       </div>
+
+      <!-- Explore Users -->
       <div class="container d-flex flex-column" v-if="activeSection=='users'">
         <div class="user-card border-bottom py-4" v-for="user in search" :key="user.id" v-if="user.uid != currentUser.uid">
             <div class="d-flex align-items-center justify-content-between">
@@ -55,54 +61,61 @@
             </div>
         </div>
       </div>
+
+      <!-- Readme Modal -->
       <modal :show.sync="readmeModal" class="readme-modal" modal-classes="modal-dialog-centered modal-lg">
-            <h6 slot="header" class="modal-title" id="modal-title-default">{{ selectedReadme.title }}</h6>
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-7">
-                        <div class="preview w-100 mb-3 p-4 rounded">
-                            <div class="content" v-html="selectedReadme.preview"></div>
-                        </div>
+        <!-- Modal content -->
+        <h6 slot="header" class="modal-title" id="modal-title-default">{{ selectedReadme.title }}</h6>
+
+        <!-- Modal content -->
+        <div class="container">
+            <div class="row w-100">
+                <div class="col-lg-7 w-100">
+                    <div class="preview w-100 mb-3 p-4 rounded">
+                        <div class="content" v-html="selectedReadme.preview"></div>
                     </div>
-                    <div class="col-lg-5 d-flex flex-column align-items-start">
-                        <div v-if="currentUser && selectedReadme.user != currentUser.uid" class="w-100 d-flex flex-column">
-                            <base-button v-if="selectedReadme.public" class="w-100" type="primary" @click="openReadme(selectedReadme)" icon="fa fa-pencil-square-o">Use this template</base-button>
+                </div>
+                <div class="col-lg-5 d-flex flex-column align-items-start">
+                    <div v-if="currentUser && selectedReadme.user != currentUser.uid" class="w-100 d-flex flex-column">
+                        <base-button v-if="selectedReadme.public" class="w-100" type="primary" @click="openReadme(selectedReadme)" icon="fa fa-pencil-square-o">Use this template</base-button>
 
-                            <div v-if="selectedReadme.type != 'template'" class="d-flex align-items-center justify-content-between mt-4">
-                                <div @click="openUser(selectedReadme.user)" class="user-info d-flex align-items-center">
-                                    <img v-if="selectedReadme.photoURL" :src="selectedReadme.photoURL" class="rounded-circle" width="50" height="50" />
-                                    <img v-else src="https://firebasestorage.googleapis.com/v0/b/readmeasy.appspot.com/o/images%2Fcat-symbol-svgrepo-com.svg?alt=media&token=5baf8f00-3b2e-4157-8428-7db153bce3b8" class="rounded-circle" width="50" height="50" />
-                                    <div class="d-flex flex-column ml-4">
-                                        <span class="text-default">{{ selectedReadme.fullName }}</span>
-                                        <small class="text-primary">@{{ selectedReadme.userName }}</small>
-                                    </div>
-                                </div>
-
-                                <div v-if="selectedReadme.user != currentUser.uid">
-                                    <i v-if="!selectedReadme.followers || !selectedReadme.followers.includes(currentUser.uid)" class="readme-follow fa fa-user-plus bg-primary text-white p-2 rounded" @click="toggleFollow({uid: selectedReadme.user, followers: selectedReadme.followers})"></i>
-                                    <i v-else class="readme-follow fa fa-user-times text-primary border border-primary p-2 rounded" @click="toggleFollow({uid: selectedReadme.user, followers: selectedReadme.followers})"></i>
+                        <div v-if="selectedReadme.type != 'template'" class="d-flex align-items-center justify-content-between mt-4">
+                            <div @click="openUser(selectedReadme.user)" class="user-info d-flex align-items-center">
+                                <img v-if="selectedReadme.photoURL" :src="selectedReadme.photoURL" class="rounded-circle" width="50" height="50" />
+                                <img v-else src="https://firebasestorage.googleapis.com/v0/b/readmeasy.appspot.com/o/images%2Fcat-symbol-svgrepo-com.svg?alt=media&token=5baf8f00-3b2e-4157-8428-7db153bce3b8" class="rounded-circle" width="50" height="50" />
+                                <div class="d-flex flex-column ml-4">
+                                    <span class="text-default">{{ selectedReadme.fullName }}</span>
+                                    <small class="text-primary">@{{ selectedReadme.userName }}</small>
                                 </div>
                             </div>
 
-                            <span v-else class="text-default">{{ selectedReadme.fullName }}</span>
+                            <div v-if="selectedReadme.user != currentUser.uid">
+                                <i v-if="!selectedReadme.followers || !selectedReadme.followers.includes(currentUser.uid)" class="readme-follow fa fa-user-plus bg-primary text-white p-2 rounded" @click="toggleFollow({uid: selectedReadme.user, followers: selectedReadme.followers})"></i>
+                                <i v-else class="readme-follow fa fa-user-times text-primary border border-primary p-2 rounded" @click="toggleFollow({uid: selectedReadme.user, followers: selectedReadme.followers})"></i>
+                            </div>
                         </div>
 
-                        <div v-else class="w-100">
-                            <div class="d-flex">
-                                <base-button class="w-50" type="primary" @click="openReadme(selectedReadme)" icon="fa fa-pencil">Edit</base-button>
-                                <base-button class="w-50" type="danger" @click="openReadme(selectedReadme)" icon="fa fa-trash">Delete</base-button>
-                            </div>                            
-                        </div>
-
-                        <p v-if="selectedReadme.description"  class="readme-description w-100 mt-3">{{ selectedReadme.description }}</p>
+                        <span v-else class="text-default">{{ selectedReadme.fullName }}</span>
                     </div>
-                </div>
+
+                    <div v-else class="w-100">
+                        <div class="d-flex">
+                            <base-button class="w-50" type="primary" @click="openReadme(selectedReadme)" icon="fa fa-pencil">Edit</base-button>
+                            <base-button class="w-50" type="danger" @click="openReadme(selectedReadme)" icon="fa fa-trash">Delete</base-button>
+                        </div>                            
+                    </div>
+
+                    <p v-if="selectedReadme.description"  class="readme-description w-100 mt-3">{{ selectedReadme.description }}</p>
+              </div>
             </div>
-            <template slot="footer">
-                <span class="like ml-4" v-if="selectedReadme.likes" @click="toggleLike(selectedReadme)"><i :class="['fa text-primary', selectedReadme.likes && selectedReadme.likes.includes(currentUser ? currentUser.uid : '') ? 'fa-heart' : 'fa-heart-o']"></i> {{ selectedReadme.likes.length }} Likes</span>
-                <base-button type="link" class="ml-auto" @click="readmeModal = false">Close</base-button>
-            </template>
-        </modal>
+          </div>
+
+          <!-- Modal footer -->
+          <template slot="footer">
+              <span class="like ml-4" v-if="selectedReadme.likes" @click="toggleLike(selectedReadme)"><i :class="['fa text-primary', selectedReadme.likes && selectedReadme.likes.includes(currentUser ? currentUser.uid : '') ? 'fa-heart' : 'fa-heart-o']"></i> {{ selectedReadme.likes.length }} Likes</span>
+              <base-button type="link" class="ml-auto" @click="readmeModal = false">Close</base-button>
+        </template>
+      </modal>
     </section>
   </template>
   
@@ -131,6 +144,7 @@ export default {
     };
   },
   computed: {
+    // Filter readmes and users
     search() {
       if (this.searchQuery) {
         if (this.activeSection === 'readmes') {
@@ -149,6 +163,8 @@ export default {
         return this.users;
       }
     },
+
+    // Position of the triangle
     trianglePosition() {
         const activeItem = document.getElementById(this.activeSection);
 
@@ -163,7 +179,9 @@ export default {
     },
     
   },
+
   async mounted() {
+    // Get current user
     const auth = getAuth();
     auth.onAuthStateChanged(user => {
       if (user) {
@@ -171,6 +189,7 @@ export default {
       }
     });
 
+    // Get readmes
     const readmesRef = collection(db, 'readme');
     onSnapshot(readmesRef, async (snapshot) => {
       const readmesData = await Promise.all(snapshot.docs.map(async (docSnap) => {
@@ -202,6 +221,7 @@ export default {
       }
     });
 
+    // Get users
     const usersRef = collection(db, 'user');
     onSnapshot(usersRef, async (snapshot) => {
         const usersData = await Promise.all(snapshot.docs.map(async (docSnap) => {
@@ -221,6 +241,7 @@ export default {
       this.users = usersData;
     });
   },
+
   methods: {
     // Set active section
     setActiveSection(section) {
@@ -442,16 +463,16 @@ export default {
 }
 
 .readme-description{
-        white-space: pre-line;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-    }
+    white-space: pre-line;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
 
-    .readme-follow:hover {
-        cursor: pointer;
-    }
+.readme-follow:hover {
+    cursor: pointer;
+}
 
-    /* Style to make it look like GitHub */
+/* Style to make it look like GitHub */
 .content>>>h1, .content>>>h2{
     font-weight: bold;
     border-bottom: 1px solid gainsboro;
@@ -499,4 +520,3 @@ export default {
   }
 }
 </style>
-  ../firebase

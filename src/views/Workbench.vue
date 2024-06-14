@@ -68,7 +68,7 @@
                                     <base-checkbox v-model="githubStats.stats">Stats</base-checkbox>
                                     <base-checkbox v-model="githubStats.streak">Streak</base-checkbox>
                                     <base-checkbox v-model="githubStats.languages">Languages</base-checkbox>
-                                    <base-checkbox v-model="githubStats.trophy">Trophy</base-checkbox>
+                                    <base-checkbox v-model="githubStats.trophy">Trophies</base-checkbox>
                                 </div>
 
                                 <div v-else-if="section.title=='Skill Icons'">
@@ -201,7 +201,7 @@
                                     <base-checkbox v-model="githubStats.stats">Stats</base-checkbox>
                                     <base-checkbox v-model="githubStats.streak">Streak</base-checkbox>
                                     <base-checkbox v-model="githubStats.languages">Languages</base-checkbox>
-                                    <base-checkbox v-model="githubStats.trophy">Trophy</base-checkbox>
+                                    <base-checkbox v-model="githubStats.trophy">Trophies</base-checkbox>
                                 </div>
 
                                 <div v-else-if="section.title=='Skill Icons'">
@@ -266,7 +266,8 @@ export default {
     },
 
     watch: {
-        mySections: {
+        '$route.params.id': 'loadReadme',
+        'mySections': {
             handler: function() {
                 this.loadPreview();
             },
@@ -544,11 +545,12 @@ export default {
                         this.linkUrl = link.getAttribute('href');
                     }
                 } else if (section.title === 'GitHub Stats') {
-                    // Get the attributes for github stats
-                    this.githubStats.languages = tempDiv.querySelector('p').getAttribute('languages') === 'true';
+                    // Get the attributes for github stats                    
                     this.githubStats.stats = tempDiv.querySelector('p').getAttribute('stats') === 'true';
                     this.githubStats.streak = tempDiv.querySelector('p').getAttribute('streak') === 'true';
                     this.githubStats.summary = tempDiv.querySelector('p').getAttribute('summary') === 'true';
+                    this.githubStats.languages = tempDiv.querySelector('p').getAttribute('languages') === 'true';
+                    this.githubStats.trophy = tempDiv.querySelector('p').getAttribute('trophy') === 'true';
                 } else if (section.title === 'Image') {
                     // Get the image attributes
                     this.imageWidth = tempDiv.querySelector('p').getAttribute('width');
@@ -628,11 +630,12 @@ export default {
                 // Update the attributes for github stats
                 let paragraph = tempDiv.querySelector('p');
                 if (paragraph) {
-                    // Update the paragraph attributes
-                    paragraph.setAttribute('languages', this.githubStats.languages);
+                    // Update the paragraph attributes                    
                     paragraph.setAttribute('stats', this.githubStats.stats);
                     paragraph.setAttribute('streak', this.githubStats.streak);
                     paragraph.setAttribute('summary', this.githubStats.summary);
+                    paragraph.setAttribute('languages', this.githubStats.languages);
+                    paragraph.setAttribute('trophy', this.githubStats.trophy);
                 }
             } else if (section.title === 'Image') {
                 // Update the image attributes
@@ -738,7 +741,7 @@ export default {
                     statsContent += '<p align="center"><img src="https://github-readme-streak-stats.herokuapp.com/?user='+this.extractText(htmlContent)+'&theme=transparent" alt="'+this.extractText(htmlContent)+'" /></p>';
                 }
                 if (languages) {
-                    statsContent += '<p align="center"<img src="https://github-readme-stats.vercel.app/api/top-langs?username='+this.extractText(htmlContent)+'&show_icons=true&locale=en&layout=pie&theme=transparent" alt="'+this.extractText(htmlContent)+'" /></p>';
+                    statsContent += '<p align="center"><img src="https://github-readme-stats.vercel.app/api/top-langs?username='+this.extractText(htmlContent)+'&show_icons=true&locale=en&layout=pie" alt="'+this.extractText(htmlContent)+'" /></p>';
                 }
                 if (trophy) {
                     statsContent += '<p align="center"><img src="https://github-profile-trophy.vercel.app/?username='+this.extractText(htmlContent)+'&theme=flat&column=7" alt="'+this.extractText(htmlContent)+'" /></p>';
@@ -769,7 +772,6 @@ export default {
 
             let paragraph = tempDiv.querySelector('p');
             let span = tempDiv.querySelector('span');
-            console.log(this.extractText(span))
             if (paragraph && span) {
                 let badges = paragraph.getAttribute('badges').split(',');
                 let badgesContent = "";
@@ -889,7 +891,7 @@ export default {
                 if (this.readmeId == 'NewReadMe' || this.readmeUser !== this.user.uid) {
                     // Add a new document with a generated ID
                     const docRef = await addDoc(collection(db, 'readme'), {
-                        title: this.readmeTitle,
+                        title: this.readmeTitle ? this.readmeTitle : 'New ReadME',
                         description: this.readmeDescription ? this.readmeDescription : '',
                         public: this.readmePublic,
                         user: this.user.uid,
@@ -898,12 +900,13 @@ export default {
                     });
 
                     this.readmeId = docRef.id;
+                    this.readmeUser = this.user.uid;
                     this.$route.params.id = docRef.id;
                 } else {
                     // Update the document
                     const readmeRef = doc(db, "readme", this.readmeId);
                     await setDoc(readmeRef, {
-                        title: this.readmeTitle,
+                        title: this.readmeTitle ? this.readmeTitle : 'New ReadME',
                         description: this.readmeDescription ? this.readmeDescription : '',
                         public: this.readmePublic,
                         user: this.user.uid,
@@ -937,6 +940,8 @@ export default {
                 if (localStorage.getItem('mySections')) {
                     this.mySections = JSON.parse(localStorage.getItem('mySections'));
                     this.readmeTitle = localStorage.getItem('readmeTitle');
+                } else {
+                    this.mySections = [];
                 }
             } else {
                 // Load the readme from Firestore

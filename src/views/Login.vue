@@ -17,10 +17,14 @@
                           header-classes="bg-white pb-5"
                           body-classes="px-lg-5 py-lg-5"
                           class="border-0">
+
+                        <!-- Login form -->
                         <template>
                             <div class="text-muted text-center mb-3">
                                 <small>Sign in with</small>
                             </div>
+
+                            <!-- Social login buttons -->
                             <div class="btn-wrapper text-center">
                                 <base-button type="neutral" @click="signInWithGithub">
                                     <img slot="icon" src="img/icons/common/github.svg">
@@ -33,6 +37,8 @@
                                 </base-button>
                             </div>
                         </template>
+
+                        <!-- Or sign in with credentials -->
                         <template>
                             <div class="text-center text-muted m-3">
                                 <small>Or sign in with credentials</small>
@@ -60,6 +66,8 @@
                             </form>
                         </template>
                     </card>
+
+                    <!-- Create new account -->
                     <div class="row mt-3">
                         <div class="col-12 text-center">
                             <RouterLink to="/register" class="text-light">
@@ -74,7 +82,8 @@
 </template>
 <script>
 import { signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
-import { auth, googleProvider, githubProvider } from '../../firebase';
+import { auth, googleProvider, githubProvider, db } from '../../firebase';
+import {doc, setDoc, getDoc} from "firebase/firestore";
 
 
 export default {
@@ -93,6 +102,7 @@ export default {
                 const result = await signInWithPopup(auth, googleProvider);
                 const user = result.user;
                 this.$router.push('/');
+                this.saveUserData(user);
             } catch (error) {
                 console.error('Error signing in with Google: ', error);
                 this.error = this.extractErrorMessage(error.message);
@@ -105,6 +115,7 @@ export default {
                 const result = await signInWithPopup(auth, githubProvider);
                 const user = result.user;
                 this.$router.push('/');
+                this.saveUserData(user);
             } catch (error) {
                 console.error('Error signing in with Github: ', error);
                 this.error = this.extractErrorMessage(error.message);
@@ -123,6 +134,28 @@ export default {
             }
         },
 
+        // Saves the user data to the database
+        async saveUserData(user) {
+            try {
+                const userRef = doc(db, "user", user.uid);
+                const userSnap = await getDoc(userRef);
+
+                if (userSnap.exists()) {
+                    this.user = userSnap.data();
+                } else {
+                    await setDoc(doc(db, 'user', user.uid), {
+                        fullName: this.name || user.displayName,
+                        username: this.username || user.email.split('@')[0],
+                        email: user.email,
+                        photoURL: user.photoURL
+                    });
+                }
+            } catch (error) {
+                console.error('Error saving user data: ', error);
+                this.error = this.extractErrorMessage(error.message);
+            }
+        },
+
         // Extracts the error message from the error object
         extractErrorMessage(message) {
             console.log(message);
@@ -132,6 +165,16 @@ export default {
                     return 'Email or password is incorrect. Please try again.';
                 case 'Firebase: Error (auth/account-exists-with-different-credential).':
                     return 'An account already exists with the same email address and different credentials.';
+                case 'Firebase: Error (auth/popup-closed-by-user).':
+                    return 'The popup has been closed by the user before finalizing the operation.';
+                case 'Firebase: Error (auth/popup-blocked).':
+                    return 'The popup has been blocked by the browser.';
+                case 'Firebase: Error (auth/invalid-email).':
+                    return 'The email address is not valid.';
+                case 'Firebase: Error (auth/user-not-found).':
+                    return 'The user with the provided email address does not exist.';
+                case 'Firebase: Error (auth/cancelled-popup-request).':
+                    return 'The popup has been closed by the user before finalizing the operation.';
                 default:
                     return 'An error occurred. Please try again later.';
             }
@@ -139,6 +182,8 @@ export default {
     }
 };
 </script>
-<style>
+<style scoped>
+.section-shaped{
+    min-height: 100vh!important;
+}
 </style>
-../firebase

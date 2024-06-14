@@ -13,15 +13,21 @@
         </section>
         <section class="section section-skew">
             <div class="container">
+                <!-- Profile card -->
                 <card shadow class="card-profile mt--300" no-body>
                     <div class="p-5">
                         <div class="profile-info d-flex align-items-center px-5">
+
+                            <!-- Profile image -->
                             <div class="w-25 profile-image-container">
                                 <img v-if="user.photoURL" :src="user.photoURL" class="profile-image rounded-circle" />
                                 <img v-else src="https://firebasestorage.googleapis.com/v0/b/readmeasy.appspot.com/o/images%2Fcat-symbol-svgrepo-com.svg?alt=media&token=5baf8f00-3b2e-4157-8428-7db153bce3b8" class="profile-image rounded-circle" />
                             </div>
+
+                            <!-- Profile name and actions -->
                             <div class="w-75 d-flex flex-column align-items-start">
                                 <div class="profile-name w-100 d-flex flex-row justify-content-between align-items-center">
+                                    <!-- Profile name and username -->
                                     <div class="d-flex justify-content-between">
                                         <div class="d-flex flex-column align-items-start font-weight-bold">
                                             {{ user.fullName }}
@@ -39,6 +45,7 @@
                                         </div>
                                     </div>
 
+                                    <!-- Profile stats -->
                                     <div class="card-profile-stats d-flex justify-content-center">
                                         <div @click="openModal('Followers')" class="stat">
                                             <span class="heading">{{ followers.length }}</span>
@@ -51,6 +58,7 @@
                                         </div>
                                     </div>
 
+                                    <!-- Profile actions -->
                                     <div class="profile-actions">
                                         <div v-if="currentUser && user.uid != currentUser.uid">
                                             <base-button v-if="!user.followers || !user.followers.includes(currentUser.uid)" class="follow-button" type="primary" icon="fa fa-user-plus" @click="toggleFollow(user)">Follow</base-button>
@@ -61,6 +69,8 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- Profile job title and location -->
                                 <div>
                                     <div class="font-weight-bold mb-3"><span class="mr-3">{{ user.jobTitle }}</span><span class="font-weight-light" v-if="user.location"><i class="fa fa-map-marker"></i> {{ user.location }}</span></div>
                                     <div class="description text-justify">{{ user.description }}</div>
@@ -69,6 +79,8 @@
                         </div>
 
                         <div class="mt-5 py-5 border-top">
+
+                            <!-- Readmes toggle -->
                             <div class="readme-toggle d-flex mb-5 pl-5">
                                 <div @click="likedReadmes=false" :class="[{'font-weight-bold' : !likedReadmes}, {'font-weight-light' : likedReadmes}]">
                                     {{ readmes.length }} Readmes
@@ -79,6 +91,7 @@
                                 </div>
                             </div>  
 
+                            <!-- Readmes -->
                             <div v-if="!likedReadmes" class="d-flex flex-wrap justify-content-center">
                                 <div v-for="readme in readmes" :key="readme.id" class="readme-card m-4 d-flex flex-column justify-content-center">
                                     <div class="preview w-100 mb-3 p-4 rounded" @click="openReadmeModal(readme)">
@@ -91,6 +104,8 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Liked Readmes -->
                             <div v-else class="d-flex flex-wrap justify-content-center">
                                 <div v-for="readme in likes" :key="readme.title+readme.id" class="readme-card m-4 d-flex flex-column justify-content-center">
                                     <div class="preview w-100 mb-3 p-4 rounded" @click="openReadmeModal(readme)">
@@ -110,8 +125,13 @@
             </div>
         </section>
 
+        <!-- Modals -->
+
+        <!-- Profile modal -->
         <modal :show.sync="modal">
             <h6 slot="header" class="modal-title" id="modal-title-default">{{ modalTitle }}</h6>
+
+            <!-- Edit profile form -->
             <div v-if="modalTitle === 'Edit Profile'" class="container">
                 <form @submit.prevent="updateProfile">
                     <div class="image-form w-100 d-flex justify-content-center mb-4 position-relative">
@@ -146,6 +166,8 @@
                     </div>
                 </form>
             </div>
+
+            <!-- Followers and Following -->
             <div class="container d-flex flex-column" v-if="modalTitle=='Followers' || modalTitle=='Following'">
                 <div v-if="users.length == 0" class="text-center m-3">
                     <div v-if="user.uid != currentUser.uid">
@@ -180,6 +202,8 @@
                 <base-button type="link" class="ml-auto" @click="modal = false">Close</base-button>
             </template>
         </modal>
+
+        <!-- Readme modal -->
         <modal :show.sync="readmeModal" class="readme-modal" modal-classes="modal-dialog-centered modal-lg">
             <h6 slot="header" class="modal-title" id="modal-title-default">{{ selectedReadme.title }}</h6>
             <div class="container">
@@ -275,6 +299,7 @@ export default {
         this.openSection();
     },
 
+    // Watch for route changes
     watch: {
         '$route.params.id': 'getProfileData',
         '$route.params.section': 'openSection'
@@ -561,6 +586,7 @@ export default {
 
 
 <style scoped>
+/* Profile page styles */
     .readme-card {
         width: 15rem;
         height: 20rem;
@@ -699,6 +725,7 @@ export default {
     font-size: 0.8rem!important;
 }
 
+/* Responsive styles */
     @media screen and (max-width: 991.5px) {
         .profile-info {
             flex-direction: column;

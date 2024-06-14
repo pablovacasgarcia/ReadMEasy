@@ -12,25 +12,31 @@
         <div class="container pt-lg-md">
             <div class="row justify-content-center">
                 <div class="col-lg-5">
+
+                    <!-- Register form -->
                     <card type="secondary" shadow header-classes="bg-white pb-5" body-classes="px-lg-5 py-lg-5" class="border-0">
                     <template>
+
+                        <!-- Social login buttons -->
                         <div class="text-muted text-center mb-3">
-                        <small>Sign in with</small>
+                            <small>Sign in with</small>
                         </div>
                         <div class="btn-wrapper text-center">
-                        <base-button type="neutral" @click="signInWithGoogle">
-                            <img slot="icon" src="img/icons/common/google.svg">
-                            Google
-                        </base-button>
-                        <base-button type="neutral" @click="signInWithGithub">
-                            <img slot="icon" src="img/icons/common/github.svg">
-                            Github
-                        </base-button>
+                            <base-button type="neutral" @click="signInWithGoogle">
+                                <img slot="icon" src="img/icons/common/google.svg">
+                                Google
+                            </base-button>
+                            <base-button type="neutral" @click="signInWithGithub">
+                                <img slot="icon" src="img/icons/common/github.svg">
+                                Github
+                            </base-button>
                         </div>
                     </template>
                     <template>
+
+                        <!-- Or sign up with credentials -->
                         <div class="text-center text-muted m-3">
-                        <small>Or sign up with credentials</small>
+                            <small>Or sign up with credentials</small>
                         </div>
                         <form>
                             <base-input 
@@ -86,6 +92,8 @@
                         </form>
                     </template>
                     </card>
+
+                    <!-- Already have an account -->
                     <div class="row mt-3">
                         <div class="col-12 text-center">
                             <RouterLink to="/login" class="text-light">
@@ -101,8 +109,8 @@
   
 <script>
   import { auth, googleProvider, githubProvider, db } from '../../firebase';
-  import { setDoc, doc } from "firebase/firestore";
-  import { signInWithPopup, createUserWithEmailAndPassword, updateProfile, sendEmailVerification } from "firebase/auth";
+  import { setDoc, doc, onSnapshot, getDoc } from "firebase/firestore";
+  import { signInWithPopup, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
   
   export default {
     data() {
@@ -172,17 +180,25 @@
         // Saves the user data to the database
         async saveUserData(user) {
             try {
-                await setDoc(doc(db, 'user', user.uid), {
-                    fullName: this.name || user.displayName,
-                    username: this.username || user.email.split('@')[0],
-                    email: user.email,
-                    photoURL: user.photoURL
-                });
+                const userRef = doc(db, "user", user.uid);
+                const userSnap = await getDoc(userRef);
+
+                if (userSnap.exists()) {
+                    this.user = userSnap.data();
+                } else {
+                    await setDoc(doc(db, 'user', user.uid), {
+                        fullName: this.name || user.displayName,
+                        username: this.username || user.email.split('@')[0],
+                        email: user.email,
+                        photoURL: user.photoURL
+                    });
+                }
             } catch (error) {
                 console.error('Error saving user data: ', error);
                 this.error = this.extractErrorMessage(error.message);
             }
         },
+
 
         // Checks the strength of the password
         checkPasswordStrength() {
@@ -220,26 +236,31 @@
                     return 'The password is too weak.';
                 case 'Firebase: Error (auth/account-exists-with-different-credential).':
                     return 'An account already exists with the same email address and different credentials.';
+                case 'Firebase: Error (auth/cancelled-popup-request).':
+                    return 'The popup has been closed by the user before finalizing the operation.';
+                case 'Firebase: Error (auth/popup-blocked).':
+                    return 'The popup has been blocked by the browser.';
                 default:
                     return 'An error occurred. Please try again later.';
             }
         }
     },
     computed: {
-      passwordStrengthClass() {
-        return {
-          'text-danger': this.passwordStrength === 'weak',
-          'text-warning': this.passwordStrength === 'medium',
-          'text-success': this.passwordStrength === 'strong',
-        };
-      }
+        // Returns the class for the password strength
+        passwordStrengthClass() {
+            return {
+            'text-danger': this.passwordStrength === 'weak',
+            'text-warning': this.passwordStrength === 'medium',
+            'text-success': this.passwordStrength === 'strong',
+            };
+        }
     }
   };
 </script>
   
 <style>
+    /* Invalid input */
     .invalid-input i {
         color: var(--danger);
     }
 </style>
-  ../firebase
