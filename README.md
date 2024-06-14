@@ -19,5 +19,5 @@ Creating a README could be really easy or diffcult. Which way will you choose?
 5.  Enjoy 👇🏻
 
 <div align="center">
-<img src="https://firebasestorage.googleapis.com/v0/b/readmeasy.appspot.com/o/images%2F5eeea355389655.59822ff824b72.gif?alt=media&token=e5261eed-6ea7-49f1-a64f-c4dccd78f691" style="width: 100%;" />
+<img src="https://firebasestorage.googleapis.com/v0/b/readmeasy.appspot.com/o/images%2F5eeea355389655.59822ff824b72.gif?alt=media&token=e5261eed-6ea7-49f1-a64f-c4dccd78f691" style="width: 50%;" />
 </div>
