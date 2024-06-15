@@ -68,7 +68,7 @@
         <h6 slot="header" class="modal-title" id="modal-title-default">{{ selectedReadme.title }}</h6>
 
         <!-- Modal content -->
-        <div class="container">
+        <div class="container justify-content-center">
             <div class="row w-100">
                 <div class="col-lg-7 w-100">
                     <div class="preview w-100 mb-3 p-4 rounded">
@@ -94,8 +94,6 @@
                                 <i v-else class="readme-follow fa fa-user-times text-primary border border-primary p-2 rounded" @click="toggleFollow({uid: selectedReadme.user, followers: selectedReadme.followers})"></i>
                             </div>
                         </div>
-
-                        <span v-else class="text-default">{{ selectedReadme.fullName }}</span>
                     </div>
 
                     <div v-else class="w-100">
@@ -210,7 +208,7 @@ export default {
           description: data.description,
           user: data.user,
           likes: data.likes || [],
-          public: data.public ? data.public : true,
+          public: data.public,
           type: data.type ? data.type : 'readme'
         };
       }));
@@ -269,17 +267,23 @@ export default {
     // Follow or unfollow a user
     async toggleFollow(user) {
       const userRef = doc(db, 'user', user.uid);
-        if (user.followers.includes(this.currentUser.uid)) {
+      if (!user.followers){
+          user.followers=[];
+      }
+      if (user.followers.includes(this.currentUser.uid)) {
           await updateDoc(userRef, {
-            followers: arrayRemove(this.currentUser.uid)
-          });
-        } else {
+          followers: arrayRemove(this.currentUser.uid)
+      });
+      } else {
           await updateDoc(userRef, {
-            followers: arrayUnion(this.currentUser.uid)
-          });
-        }
+          followers: arrayUnion(this.currentUser.uid)
+      });
+    }
 
         if (this.readmeModal) {
+          if (!this.selectedReadme.followers){
+            this.selectedReadme.followers=[];
+          }
           this.selectedReadme.followers.includes(this.currentUser.uid) ? this.selectedReadme.followers.splice(this.selectedReadme.followers.indexOf(this.currentUser.uid), 1) : this.selectedReadme.followers.push(this.currentUser.uid);
         }
     },

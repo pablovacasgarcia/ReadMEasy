@@ -19,7 +19,7 @@
             <div class="col-lg-7 text-center pt-lg">
 
               <!-- Logo -->
-              <img src="img/brand/white.svg" fetchpriority="high" style="width: 20rem" class="img-fluid" alt="ReadMEasy Logo">
+              <img src="/img/brand/white.svg" fetchpriority="high" style="width: 20rem" class="img-fluid" alt="ReadMEasy Logo">
 
               <!-- Title -->
               <h1 class="lead text-white">The Easiest <span class="text-info font-weight-bold">README</span> Generator</h1>
@@ -98,7 +98,7 @@
       <div class="container features">
         <div class="row row-grid align-items-center">
           <div class="col-md-6 order-2">
-            <img src="img/theme/promo-1.png" class="img-fluid floating">
+            <img src="/img/theme/promo-1.png" class="img-fluid floating">
           </div><div class="col-md-6 order-1">
             <div class="pr-md-5">
               <h3 class="text-white"><span class="text-underline font-weight-bold">Logged</span> users features</h3>

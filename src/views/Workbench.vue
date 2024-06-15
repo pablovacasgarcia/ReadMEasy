@@ -341,6 +341,7 @@ export default {
             history: [],
             historyIndex: -1,
             searchQuery: '',
+            likes: [],
         };
     },
 
@@ -912,6 +913,7 @@ export default {
                         user: this.user.uid,
                         sections: JSON.stringify(this.mySections),
                         content: this.getHtml(),
+                        likes: this.likes,
                     });
                 }
 
@@ -951,8 +953,9 @@ export default {
                     this.mySections = JSON.parse(readmeSnap.data().sections);
                     this.readmeTitle = readmeSnap.data().title;
                     this.readmeDescription = readmeSnap.data().description;
-                    this.readmePublic = readmeSnap.data().public ? readmeSnap.data().public : true;
+                    this.readmePublic = readmeSnap.data().public;
                     this.readmeUser = readmeSnap.data().user;
+                    this.likes = readmeSnap.data().likes ? readmeSnap.data().likes : [];
                 } else {
                     console.log("No such readme document!");
                 }

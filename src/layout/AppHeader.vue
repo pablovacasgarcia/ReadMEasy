@@ -6,7 +6,7 @@
 
             <!-- Brand Logo -->
             <router-link slot="brand" class="navbar-brand mr-lg-5" to="/">
-                <img src="https://firebasestorage.googleapis.com/v0/b/readmeasy.appspot.com/o/images%2Fblue.png?alt=media&token=86cd20a2-eea2-4e6d-822b-1dc26cbc504d" alt="ReadMEasy">
+                <img src="/img/brand/blue.png" alt="ReadMEasy">
             </router-link>
 
             <!-- Close button -->
@@ -35,7 +35,7 @@
                                     <p class="description d-none d-md-inline-block mb-0">Create and design a new ReadME project</p>
                                 </div>
                             </router-link>
-                            <router-link :to="{name: 'profile', params:{id: 'MyProfile'}}" v-if="user" class="media d-flex align-items-center">
+                            <router-link :to="{name: 'profile', params:{id: 'MyProfile', section: 'readmes'}}" v-if="user" class="media d-flex align-items-center">
                                 <div class="icon icon-shape bg-gradient-primary rounded-circle text-white">
                                     <i class="ni ni-spaceship"></i>
                                 </div>
@@ -97,7 +97,7 @@
         <base-nav class="navbar-mobile position-fixed bg-white shadow-sm" transparent type="" effect="">
             <!-- Brand Logo -->
             <router-link slot="brand" class="navbar-brand mr-lg-5" to="/">
-                <img src="https://firebasestorage.googleapis.com/v0/b/readmeasy.appspot.com/o/images%2Fblue.png?alt=media&token=86cd20a2-eea2-4e6d-822b-1dc26cbc504d" alt="logo">
+                <img src="/img/brand/blue.png" alt="logo">
             </router-link>
 
             <!-- Menu header -->
@@ -128,7 +128,7 @@
             <ul class="navbar-nav align-items-center ml-lg-auto mt-4">
                 <template v-if="user">                    
                     <li class="nav-item">
-                        <router-link :to="{name: 'profile', params:{id: 'MyProfile'}}" class="nav-link nav-link-icon"><i class="ni ni-spaceship"></i><span class="nav-link-inner--text d-lg-none">My ReadMEs</span></router-link>
+                        <router-link :to="{name: 'profile', params:{id: 'MyProfile', section: 'readmes'}}" class="nav-link nav-link-icon"><i class="ni ni-spaceship"></i><span class="nav-link-inner--text d-lg-none">My ReadMEs</span></router-link>
                     </li>
                     <li class="nav-item">
                         <router-link :to="{name: 'profile', params:{id: 'MyProfile', section: 'liked'}}" class="nav-link nav-link-icon"><i class="ni ni-favourite-28"></i><span class="nav-link-inner--text d-lg-none">Liked</span></router-link>
@@ -169,8 +169,8 @@
 
                 <!-- Modal content -->
                 <div class="container">
-                    <p>1. Tap the <img src="img/icons/common/share-icon.svg" width="30"> share button at the bottom of the screen.</p>
-                    <p>2. Scroll down and tap <span class="font-weight-bold text-primary"><img src="img/icons/common/add-icon.svg" width="30">Add to Home Screen</span>.</p>
+                    <p>1. Tap the <img src="/img/icons/common/share-icon.svg" width="30"> share button at the bottom of the screen.</p>
+                    <p>2. Scroll down and tap <span class="font-weight-bold text-primary"><img src="/img/icons/common/add-icon.svg" width="30">Add to Home Screen</span>.</p>
                     <p>3. Tap <span class="font-weight-bold text-primary">Add</span> in the top right corner.</p>
                 </div>                        
 
@@ -283,6 +283,7 @@ export default {
         // Search for ReadMEs
         search() {
             this.$router.push({ name: 'explore', params: { search: this.searchInput } });
+            this.searchInput = '';
         }
     }
 }

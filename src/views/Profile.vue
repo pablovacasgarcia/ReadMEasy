@@ -78,7 +78,7 @@
                             </div>
                         </div>
 
-                        <div class="mt-5 py-5 border-top">
+                        <div class="mt-5 py-5 border-top" id="readmes-container">
 
                             <!-- Readmes toggle -->
                             <div class="readme-toggle d-flex mb-5 pl-5">
@@ -232,8 +232,6 @@
                                     <i v-else class="follow-icon fa fa-user-times text-primary border border-primary p-2 rounded" @click="toggleFollow({uid: selectedReadme.user, followers:selectedReadme.followers})"></i>
                                 </div>
                             </div>
-
-                            <span v-else class="text-default">{{ selectedReadme.fullName }}</span>
                         </div>
 
                         <div v-else class="w-100">
@@ -358,8 +356,14 @@ export default {
             if (this.$route.params.section) {
                 if (this.$route.params.section == 'following') {
                     this.openModal('Following');
-                } else if (this.$route.params.section == 'liked') {
+                } else if (this.$route.params.section == 'liked' || this.$route.params.section == 'readmes') {
                     this.likedReadmes = true;
+
+                    if (this.$route.params.section == 'readmes') {
+                        this.likedReadmes = false;
+                    }
+
+                    document.getElementById('readmes-container').scrollIntoView({behavior: 'smooth', block: 'start'});
                 } 
             } else {
                 this.likedReadmes = false;
@@ -419,7 +423,8 @@ export default {
                     description: data.description,
                     user: data.user,
                     likes: data.likes || [],
-                    public: data.public ? data.public : true,
+                    public: data.public,
+                    type: data.type ? data.type : 'readme',
                 };
             }));
             this.likes = readmesData;
@@ -467,6 +472,9 @@ export default {
         async toggleFollow(user) {
             console.log(user);
             const userRef = doc(db, 'user', user.uid);
+            if (!user.followers){
+                user.followers=[];
+            }
             if (user.followers.includes(this.currentUser.uid)) {
                 await updateDoc(userRef, {
                     followers: arrayRemove(this.currentUser.uid)
@@ -638,6 +646,10 @@ export default {
     .user-info:hover {
         cursor: pointer;
     } 
+
+    .user-info img {
+        object-fit: cover;
+    }
 
     .username {
         font-size: 0.7rem;
