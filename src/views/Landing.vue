@@ -50,7 +50,8 @@
                   <base-button
                     class="w-50"
                     type="white"
-                    icon="fa fa-sign-in">
+                    icon="fa fa-sign-in"
+                    aria-label="Login">
                     Login
                   </base-button>
                 </router-link>
@@ -58,7 +59,8 @@
                   <base-button
                     class="w-50"
                     type="info"
-                    icon="ni ni-spaceship">
+                    icon="ni ni-spaceship"
+                    aria-label="Try it">
                     Try it
                   </base-button>                
                 </div>
@@ -98,7 +100,7 @@
       <div class="container features">
         <div class="row row-grid align-items-center">
           <div class="col-md-6 order-2">
-            <img src="/img/theme/promo-1.png" class="img-fluid floating">
+            <img src="/img/theme/promo-1.png" class="img-fluid floating" alt="Screens">
           </div><div class="col-md-6 order-1">
             <div class="pr-md-5">
               <h3 class="text-white"><span class="text-underline font-weight-bold">Logged</span> users features</h3>

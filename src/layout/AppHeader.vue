@@ -72,8 +72,8 @@
                     <template>
                         <base-dropdown class="nav-item" menu-classes="dropdown-menu-sm">
                             <div slot="title" class="nav-link" data-toggle="dropdown" role="button" @click.prevent aria-label="Profile options">
-                                <img v-if="user && user.photoURL" :src="user.photoURL" class="profile-image rounded-circle" width="30" height="30" />
-                                <img v-else src="https://firebasestorage.googleapis.com/v0/b/readmeasy.appspot.com/o/images%2Fcat-symbol-svgrepo-com.svg?alt=media&token=5baf8f00-3b2e-4157-8428-7db153bce3b8" class="profile-image rounded-circle" width="30" height="30" />
+                                <img v-if="user && user.photoURL" :src="user.photoURL" class="profile-image rounded-circle" width="30" height="30" alt="Profile Image"/>
+                                <img v-else src="https://firebasestorage.googleapis.com/v0/b/readmeasy.appspot.com/o/images%2Fcat-symbol-svgrepo-com.svg?alt=media&token=5baf8f00-3b2e-4157-8428-7db153bce3b8" class="profile-image rounded-circle" width="30" height="30" alt="Profile Image"/>
                             </div>
                             <div v-if="user" class="dropdown-menu-inner" aria-labelledby="navbar-default_dropdown_1">
                                 <router-link :to="{name:'profile', params:{id:'MyProfile'}}" class="dropdown-item"><i class="ni ni-single-02"></i>My profile</router-link>
@@ -105,8 +105,8 @@
                 <!-- Profile photo -->
                 <div class="pl-5 col-10 collapse-brand d-flex w-100 justify-content-center mt-5">
                     <router-link v-if="user" :to="{name:'profile', params:{id:'MyProfile'}}">
-                        <img v-if="user && user.photoURL" :src="user.photoURL" class="profile-image rounded-circle ml-3"/>
-                        <img v-else src="https://firebasestorage.googleapis.com/v0/b/readmeasy.appspot.com/o/images%2Fcat-symbol-svgrepo-com.svg?alt=media&token=5baf8f00-3b2e-4157-8428-7db153bce3b8" class="profile-image rounded-circle ml-3"/>
+                        <img v-if="user && user.photoURL" :src="user.photoURL" class="profile-image rounded-circle ml-3" alt="Profile Image"/>
+                        <img v-else src="https://firebasestorage.googleapis.com/v0/b/readmeasy.appspot.com/o/images%2Fcat-symbol-svgrepo-com.svg?alt=media&token=5baf8f00-3b2e-4157-8428-7db153bce3b8" class="profile-image rounded-circle ml-3" alt="Profile Image"/>
                     </router-link>
                 </div>
 
@@ -169,8 +169,8 @@
 
                 <!-- Modal content -->
                 <div class="container">
-                    <p>1. Tap the <img src="/img/icons/common/share-icon.svg" width="30"> share button at the bottom of the screen.</p>
-                    <p>2. Scroll down and tap <span class="font-weight-bold text-primary"><img src="/img/icons/common/add-icon.svg" width="30">Add to Home Screen</span>.</p>
+                    <p>1. Tap the <img src="/img/icons/common/share-icon.svg" width="30" alt="Share icon"> share button at the bottom of the screen.</p>
+                    <p>2. Scroll down and tap <span class="font-weight-bold text-primary"><img src="/img/icons/common/add-icon.svg" width="30" alt="Add Icon">Add to Home Screen</span>.</p>
                     <p>3. Tap <span class="font-weight-bold text-primary">Add</span> in the top right corner.</p>
                 </div>                        
 
