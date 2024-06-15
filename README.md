@@ -11,7 +11,7 @@ ReadMEasy is a README generator made with Vue.js, Bootsrap, SASS and Firebase, f
 You can find it at https://readmeasy.web.app and it is also installable as PWA with the menu button or manually.
 
 <div align="center">
-<img src="https://img.shields.io/github/commits-since/pablovacasgarcia/ReadMEasy/latest?style=flat&color=%2311cdef" /><img src="https://img.shields.io/github/downloads/pablovacasgarcia/ReadMEasy/total?style=flat&color=%2311cdef" /><img src="https://img.shields.io/github/forks/pablovacasgarcia/ReadMEasy?style=flat&color=%2311cdef" /><img src="https://img.shields.io/github/stars/pablovacasgarcia/ReadMEasy?style=flat&color=%2311cdef" />
+<img src="https://img.shields.io/github/commits-since/pablovacasgarcia/readmeasy/latest?style=flat&color=%2311cdef" /><img src="https://img.shields.io/github/downloads/pablovacasgarcia/readmeasy/total?style=flat&color=%2311cdef" /><img src="https://img.shields.io/github/forks/pablovacasgarcia/readmeasy?style=flat&color=%2311cdef" /><img src="https://img.shields.io/github/stars/pablovacasgarcia/readmeasy?style=flat&color=%2311cdef" /><img src="https://img.shields.io/github/watchers/pablovacasgarcia/readmeasy?style=flat&color=%2311cdef" />
 </div>
 
 ## Table of contents
@@ -144,11 +144,12 @@ Creating a README could be really easy or diffcult. Which way will you choose?
 5.  Enjoy 👇🏻
 
 <div align="center">
-<img src="https://firebasestorage.googleapis.com/v0/b/readmeasy.appspot.com/o/images%2F5eeea355389655.59822ff824b72.gif?alt=media&token=e5261eed-6ea7-49f1-a64f-c4dccd78f691" style="width: 50%;" />
+<img src="https://firebasestorage.googleapis.com/v0/b/readmeasy.appspot.com/o/images%2F5eeea355389655.59822ff824b72.gif?alt=media&token=e5261eed-6ea7-49f1-a64f-c4dccd78f691" style="width: 100%;" />
 </div>
 ```
 
 And this is how it would look like in your GitHub Repository:
+
 
 # How to create a README
 
