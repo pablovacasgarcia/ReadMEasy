@@ -43,6 +43,10 @@ cd ReadMEasy
 npm install
 ```
 
+4\. Add firebase confg:
+
+Add your Firebase configuration called 'firebase' to the main root
+
 ## Usage
 
 To run the project locally, use the following command:
