@@ -11,7 +11,7 @@ ReadMEasy is a README generator made with Vue.js, Bootsrap, SASS and Firebase, f
 You can find it at https://readmeasy.web.app and it is also installable as PWA with the menu button or manually.
 
 <div align="center">
-<img src="https://img.shields.io/github/repo-size/pablovacasgarcia/readmeasy?style=flat&color=%2311cdef" /><img src="https://img.shields.io/github/commits/pablovacasgarcia/readmeasy/latest?style=flat&color=%2311cdef" /><img src="https://img.shields.io/github/downloads/pablovacasgarcia/readmeasy/total?style=flat&color=%2311cdef" /><img src="https://img.shields.io/github/forks/pablovacasgarcia/readmeasy?style=flat&color=%2311cdef" /><img src="https://img.shields.io/github/stars/pablovacasgarcia/readmeasy?style=flat&color=%2311cdef" /><img src="https://img.shields.io/github/watchers/pablovacasgarcia/readmeasy?style=flat&color=%2311cdef" />
+<img src="https://img.shields.io/github/repo-size/pablovacasgarcia/readmeasy?style=flat&color=%2311cdef" /><img src="https://img.shields.io/github/commits-since/pablovacasgarcia/readmeasy/latest?style=flat&color=%2311cdef" /><img src="https://img.shields.io/github/downloads/pablovacasgarcia/readmeasy/total?style=flat&color=%2311cdef" /><img src="https://img.shields.io/github/forks/pablovacasgarcia/readmeasy?style=flat&color=%2311cdef" /><img src="https://img.shields.io/github/stars/pablovacasgarcia/readmeasy?style=flat&color=%2311cdef" /><img src="https://img.shields.io/github/watchers/pablovacasgarcia/readmeasy?style=flat&color=%2311cdef" />
 </div>
 
 ## Table of contents
