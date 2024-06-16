@@ -362,6 +362,7 @@ export default {
 
         if (this.sectionsProp) {
             this.mySections = JSON.parse(this.sectionsProp);
+            this.history = [JSON.parse(this.sectionsProp)];
         }
     },
 
